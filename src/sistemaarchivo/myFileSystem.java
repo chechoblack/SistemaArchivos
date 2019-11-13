@@ -5,17 +5,21 @@
  */
 package sistemaarchivo;
 
+import Vista.Console;
+
 /**
  *
  * @author ser
  */
-public class SistemaArchivo {
+public class myFileSystem {
 
     /**
      * @param args the command line arguments
      */
+    public static Console ventana = new Console();
     public static void main(String[] args) {
         // TODO code application logic here
+        ventana.setVisible(true);
     }
     
 }
