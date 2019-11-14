@@ -13,6 +13,7 @@ import static sistemaarchivo.myFileSystem.ventana;
  */
 public class lectorComandos {
     private String textConsola="";
+    private String ClaveRootDefault="";
     private boolean banderaPassword=false;
     private boolean banderaIngresoPassword=false;
     private ArrayList usuarioTemp = new ArrayList();
@@ -121,7 +122,6 @@ public class lectorComandos {
                 ventana.banderaSU=true;
             }
             else{
-                System.out.println("segundo");
                 ventana.escribirMensaje(" Password root: ");
                 ventana.banderaSU=true;
             }
@@ -130,7 +130,7 @@ public class lectorComandos {
     public void funcionSuAux(String contra){
         if(banderaIngresoPassword){
             /*aqui se valia el usuario root*/
-            if(contra.trim().equals("anderson123")){
+            if(contra.trim().equals(ClaveRootDefault)){
                 banderaPassword=true;
                 ventana.banderaSU=false;
                 ventana.usuario="root";
@@ -156,17 +156,10 @@ public class lectorComandos {
         /*
         valida format
         */
-        if(ventana.usuario.equals("root")){
-            ventana.escribirMensaje("Creado Disco.....\n");
-            ventana.escribirMensaje("Disco Creado\n");
-            ventana.ruta="C:\\root>";
-            ventana.escribirMensaje(ventana.ruta);
-        }else{
-            ventana.escribirMensaje("Creado Disco.....\n");
-            ventana.escribirMensaje("Disco Creado\n");
-            ventana.ruta="C:\\"+ventana.usuario+">";
-            ventana.escribirMensaje(ventana.ruta);
-        }
+        String tamaño = cadenaEntrada().get(1).toString();
+        ClaveRootDefault=cadenaEntrada().get(2).toString();
+        ventana.ruta="C:\\"+ventana.usuario+">";
+        ventana.escribirMensaje( ventana.ruta);
     }
     private void funcionUser(){
         if(ventana.usuario.equals("root")){
@@ -174,7 +167,7 @@ public class lectorComandos {
             ventana.escribirMensaje(" Nombre completo: ");
             ventana.banderaUser=true;
             ventana.contUser=1;
-            usuarioTemp.add(cadenaEntrada().get(1));
+            usuarioTemp.add(cadenaEntrada().get(1));//usuario
         }
         else{
             ventana.escribirMensaje("Debe ingresar como usuario root para crear un usuario\n");
@@ -183,29 +176,50 @@ public class lectorComandos {
         }
     }
     public void funcionUserAux(int cont,String comando){
-        System.out.println("tamaño lista: "+usuarioTemp.size());
-        if(cont==1){
-            //aqui se agrega el nombre
-            ventana.escribirMensaje(" Contraseña: ");
-            ventana.contUser=2;
-        }
-        else if(cont==2){
-            usuarioTemp.add(comando);//se obtiene la contraseña del usuario que se agrega
-            ventana.escribirMensaje(" Confirmación de Contraseña: ");
-            ventana.contUser=3;
-        }
-        else{
-            if(usuarioTemp.get(1).equals(comando)){
-                ventana.banderaUser=false;
-                usuarios nuevoUsuario = new usuarios(usuarioTemp.get(0).toString(), usuarioTemp.get(1).toString(), usuarioTemp.get(2).toString());
-                listaUsuarios.add(nuevoUsuario);
-                ventana.ruta="C:\\"+ventana.usuario+">";
-                ventana.escribirMensaje(ventana.ruta);
-            }else{
-                ventana.escribirMensaje(" Contraseña incorrecta ");
-                ventana.escribirMensaje(" Confirmación de Contraseña: ");
-                ventana.contUser=3;
-            }
+        switch (cont) {
+            case 1:
+                if(!comando.trim().equals("")){
+                    usuarioTemp.add(comando);
+                    ventana.escribirMensaje(" Contraseña: ");
+                    ventana.contUser=2;
+                }
+                else{
+                    ventana.escribirMensaje(" Error, debe dijitar un caracter para el nombre\n");
+                    ventana.escribirMensaje(" Nombre completo: ");
+                    ventana.banderaUser=true;
+                    ventana.contUser=1;
+                }   break;
+            case 2:
+                if(!comando.trim().equals("")){
+                    usuarioTemp.add(comando);//se obtiene la contraseña del usuario que se agrega
+                    ventana.escribirMensaje(" Confirmación de Contraseña: ");
+                    ventana.contUser=3;
+                }
+                else{
+                    ventana.escribirMensaje(" Error, debe dijitar un caracter la contraseña\n");
+                    ventana.escribirMensaje(" Contraseña: ");
+                    ventana.contUser=2;
+                }   break;
+            default:
+                if(usuarioTemp.get(2).equals(comando)){
+                    ventana.banderaUser=false;
+                    usuarios nuevoUsuario = new usuarios(usuarioTemp.get(0).toString(), usuarioTemp.get(1).toString(), usuarioTemp.get(2).toString());
+                    if(!verificarUsuarioExistente(nuevoUsuario)){
+                        System.out.println("entra");
+                        listaUsuarios.add(nuevoUsuario);
+                        ventana.ruta="C:\\"+ventana.usuario+">";
+                        ventana.escribirMensaje(ventana.ruta);
+                    }else{
+                        System.out.println("tamaño lista "+listaUsuarios.size());
+                        ventana.escribirMensaje("El usuario ya se encuentra registrado\n");
+                        ventana.ruta="C:\\"+ventana.usuario+">";
+                        ventana.escribirMensaje(ventana.ruta);
+                    }
+                }else{
+                    ventana.escribirMensaje(" Contraseña incorrecta\n");
+                    ventana.escribirMensaje(" Confirmación de Contraseña: ");
+                    ventana.contUser=3;
+                }   break;
         }
     }
     private ArrayList cadenaEntrada(){
@@ -217,5 +231,13 @@ public class lectorComandos {
             }
         }
         return textoCOmpletoP;
+    }
+    private boolean verificarUsuarioExistente(usuarios usuario){
+        for(usuarios usu : listaUsuarios){
+            if(usu.getNombreUsuario().equals(usuario.getNombreUsuario())){
+                return true;
+            }
+        }
+        return false;
     }
 }

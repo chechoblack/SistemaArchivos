@@ -18,7 +18,6 @@ public class Console extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     public int posicionCursor=0;
-    public String ClaveRootDefault="anderson";
     public boolean banderaSU= false;
     public boolean banderaUser= false;
     public int contUser=0;
@@ -77,17 +76,19 @@ public class Console extends javax.swing.JFrame {
     private void txtAConsoleKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyReleased
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
-            System.out.println(contUser);
             if(!banderaSU && !banderaUser){
-                System.out.println("primero");
-                lectura.setTextConsola(getComando());
-                lectura.parseoTexto();
+                if(!getComando().trim().equals("")){
+                    lectura.setTextConsola(getComando());
+                    lectura.parseoTexto();
+                }
+                else{
+                    escribirMensaje(ruta);
+                }
             }
             else if(banderaSU){
                 lectura.funcionSuAux(getComando());
             }
             else if(banderaUser){
-                System.out.println("entra");
                 lectura.funcionUserAux(contUser,getComando());
             }
         }
