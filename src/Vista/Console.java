@@ -18,18 +18,18 @@ public class Console extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     public int posicionCursor=0;
-    private String ClaveRootDefault="anderson123";
-    boolean banderaPassword=false;
+    public String ClaveRootDefault="anderson";
+    public boolean banderaSU= false;
+    public boolean banderaUser= false;
+    public int contUser=0;
     private lectorComandos lectura=new lectorComandos();
-    public String usuario;
-    public String nombreUsuario;
-    public String ruta="C:\\Users\\ser>";
+    public String usuario="";
+    public String nombreUsuario="";
+    public String ruta="C:>";
     public Console() {
         initComponents();
         escribirMensaje("AA [Versión 0.1](c) 2019 AA Corporation. Todos los derechos reservados.\n");
         escribirMensaje(ruta);
-        escribirMensaje(" Password root: ");
-        
     }
 
     /**
@@ -77,28 +77,22 @@ public class Console extends javax.swing.JFrame {
     private void txtAConsoleKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyReleased
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
-            if(!banderaPassword){
-                if(getComando().trim().equals("anderson123")){
-                    banderaPassword=true;
-                    ruta="C:\\root>";
-                    escribirMensaje(ruta);
-                }
-                else{
-                    ruta="C:\\Users\\ser>";
-                    escribirMensaje(ruta);
-                    escribirMensaje(" Error, Contraseña incorrecta\n");
-                    escribirMensaje(ruta);
-                    escribirMensaje(" Password root: ");
-                }
-            }
-            else{
+            System.out.println(contUser);
+            if(!banderaSU && !banderaUser){
+                System.out.println("primero");
                 lectura.setTextConsola(getComando());
                 lectura.parseoTexto();
+            }
+            else if(banderaSU){
+                lectura.funcionSuAux(getComando());
+            }
+            else if(banderaUser){
+                System.out.println("entra");
+                lectura.funcionUserAux(contUser,getComando());
             }
         }
     }//GEN-LAST:event_txtAConsoleKeyReleased
     public void escribirMensaje(String mensaje){
-        System.out.println(ruta);
         txtAConsole.setText(txtAConsole.getText()+mensaje);
         this.posicionCursor=txtAConsole.getText().length();
         txtAConsole.setCaretPosition(posicionCursor);
