@@ -7,6 +7,9 @@ package Vista;
 
 import Clases.lectorComandos;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,7 +28,7 @@ public class Console extends javax.swing.JFrame {
     private lectorComandos lectura=new lectorComandos();
     public String usuario="";
     public String nombreUsuario="";
-    public String ruta="C:\\>";
+    public String ruta="Comando>";
     public Console() {
         initComponents();
         escribirMensaje("AA [Versión 0.1](c) 2019 AA Corporation. Todos los derechos reservados.\n");
@@ -80,7 +83,11 @@ public class Console extends javax.swing.JFrame {
             if(!banderaSU && !banderaUser && !banderaPassword){
                 if(!getComando().trim().equals("")){
                     lectura.setTextConsola(getComando());
-                    lectura.parseoTexto();
+                    try {
+                        lectura.parseoTexto();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 else{
                     escribirMensaje(ruta);
@@ -94,12 +101,6 @@ public class Console extends javax.swing.JFrame {
             }
             else if(banderaPassword){
                 lectura.funcionPasswordAux(contPas,getComando());
-            }
-        }
-        if(evt.getKeyCode()==8){
-            System.out.println("entra");
-            if(posicionCursor<txtAConsole.getText().length()){
-                
             }
         }
     }//GEN-LAST:event_txtAConsoleKeyReleased
