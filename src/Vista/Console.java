@@ -96,6 +96,12 @@ public class Console extends javax.swing.JFrame {
                 lectura.funcionPasswordAux(contPas,getComando());
             }
         }
+        if(evt.getKeyCode()==8){
+            System.out.println("entra");
+            if(posicionCursor<txtAConsole.getText().length()){
+                
+            }
+        }
     }//GEN-LAST:event_txtAConsoleKeyReleased
     public void escribirMensaje(String mensaje){
         txtAConsole.setText(txtAConsole.getText()+mensaje);
