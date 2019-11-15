@@ -24,6 +24,7 @@ public class lectorComandos {
     private ArrayList<String> listaUbicaion = new ArrayList<>();
     private ArrayList<directorios> listaDirectorios= new ArrayList<>();
     private funcionalidadPrincipal disco;
+    private directorios directorioActual;
     public lectorComandos() {
     }
 
@@ -64,7 +65,7 @@ public class lectorComandos {
         
         }
         else if("mv".equals(textoParseado.trim())){
-        
+            funcionMv();
         }
         else if("ls".equals(textoParseado.trim())){
         
@@ -194,11 +195,16 @@ public class lectorComandos {
         /*
         valida format
         */
+        ventana.escribirMensaje("Creadon Disco....\n");
         nombreDisco="miDiscoDuro";
+        directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null);
+        listaDirectorios.add(nuevoDirectorio);
+        directorioActual=nuevoDirectorio;
         String tamaño = cadenaEntrada().get(1).toString();
         disco=new funcionalidadPrincipal((1024*1000)*Integer.parseInt(tamaño));
         disco.CreacionDisco();
         disco.EscribirInicioBloque();
+        ventana.escribirMensaje("Disco creado con exito\n");
         ClaveRootDefault=cadenaEntrada().get(2).toString();
         usuarios root=new usuarios("Root","rot",ClaveRootDefault);
         listaUsuarios.add(root);
@@ -431,11 +437,30 @@ public class lectorComandos {
      */
     private void funcionMkdir(){
         String nombre=cadenaEntrada().get(1).toString();
-        if(listaDirectorios.size()==0){
-            directorios nuevoDirectorio = new directorios(nombre, 0,null);
-        }else{
-            //directorios nuevoDirectorio = new directorios(nombre, 0,n);
+        directorios nuevoDirectorio = new directorios(nombre, listaDirectorios.size(),directorioActual);
+        directorioActual.setDirectorioHijo(nuevoDirectorio);
+        listaDirectorios.add(nuevoDirectorio);
+        ventana.escribirMensaje("Directorio Creado\n");
+        ventana.ruta=pathSistema()+">";
+        ventana.escribirMensaje( ventana.ruta);
+    }
+    private void funcionRm(){
+        
+    }
+    /**
+     * funcion principal del comando mv 
+     */
+    private void funcionMv(){
+        String nuevoNombre=cadenaEntrada().get(1).toString();
+        if(validarDirectorio(nuevoNombre)!=null){
+            validarDirectorio(nuevoNombre);
+            directorioActual.getDirectorioPadre().removeDirectorio(directorioActual.getNombre());
+            directorioActual.setDirectorioPadre(validarDirectorio(nuevoNombre));
         }
+        else{
+            directorioActual.setNombre(nuevoNombre);
+        }
+        
     }
     /**
      * arma la cadena de entrada sin espacios y la devuelebe en una lista
@@ -494,10 +519,23 @@ public class lectorComandos {
      * funcion que genera el path
      */
     private String pathSistema(){
-        String path=nombreDisco+"\\"+ventana.usuario;
+        String path=nombreDisco+"\\"+ventana.usuario+"\\"+directorioActual.getNombre();
         for(String var :listaUbicaion){
             path+=var+"\\";
         }
         return path;
+    }
+    /**
+     * validad si lo que ingresa es un directorio
+     * @param nombre
+     * @return 
+     */
+    private directorios validarDirectorio(String nombre){
+        for(directorios directorio : listaDirectorios){
+            if(directorio.getNombre().equals(nombre.trim())){
+                return directorio;
+            }
+        }
+        return null;
     }
 }

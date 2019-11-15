@@ -53,4 +53,11 @@ public class directorios {
     public void setArchivo(archivo archivo){
         this.listaArchivos.add(archivo);
     }
+    public void removeDirectorio(String nombre){
+        for(int i=0;i<listaDirectorios.size();i++){
+            if(listaDirectorios.get(i).getNombre().trim().equals(nombre.trim())){
+                listaDirectorios.remove(i);
+            }
+        }
+    }
 }
