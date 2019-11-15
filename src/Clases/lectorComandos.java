@@ -22,6 +22,7 @@ public class lectorComandos {
     private ArrayList<usuarios> listaUsuarios = new ArrayList<>();
     private ArrayList<grupo> listaGrupos = new ArrayList<>();
     private ArrayList<String> listaUbicaion = new ArrayList<>();
+    private ArrayList<directorios> listaDirectorios= new ArrayList<>();
     private funcionalidadPrincipal disco;
     public lectorComandos() {
     }
@@ -53,11 +54,11 @@ public class lectorComandos {
         else if("whoami".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
             funcionWhoami();
         }
-        else if("pwd".equals(textoParseado.trim())){
+        else if("pwd".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
             funcionPwd();
         }
-        else if("mkdir".equals(textoParseado.trim())){
-        
+        else if("mkdir".equals(textoParseado.trim())&& cadenaEntrada().size()==2){
+            funcionMkdir();
         }
         else if("rm".equals(textoParseado.trim())){
         
@@ -424,7 +425,18 @@ public class lectorComandos {
         ventana.escribirMensaje(path+"\n");
         ventana.ruta=pathSistema()+">";
         ventana.escribirMensaje( ventana.ruta);
-    } 
+    }
+    /**
+     * funcion principal para el comando mkdir
+     */
+    private void funcionMkdir(){
+        String nombre=cadenaEntrada().get(1).toString();
+        if(listaDirectorios.size()==0){
+            directorios nuevoDirectorio = new directorios(nombre, 0,null);
+        }else{
+            //directorios nuevoDirectorio = new directorios(nombre, 0,n);
+        }
+    }
     /**
      * arma la cadena de entrada sin espacios y la devuelebe en una lista
      * @return 
