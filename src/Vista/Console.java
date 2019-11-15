@@ -20,11 +20,12 @@ public class Console extends javax.swing.JFrame {
     public int posicionCursor=0;
     public boolean banderaSU= false;
     public boolean banderaUser= false;
-    public int contUser=0;
+    public boolean banderaPassword= false;
+    public int contUser=0,contPas=0;
     private lectorComandos lectura=new lectorComandos();
     public String usuario="";
     public String nombreUsuario="";
-    public String ruta="C:>";
+    public String ruta="C:\\>";
     public Console() {
         initComponents();
         escribirMensaje("AA [Versión 0.1](c) 2019 AA Corporation. Todos los derechos reservados.\n");
@@ -76,7 +77,7 @@ public class Console extends javax.swing.JFrame {
     private void txtAConsoleKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyReleased
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
-            if(!banderaSU && !banderaUser){
+            if(!banderaSU && !banderaUser && !banderaPassword){
                 if(!getComando().trim().equals("")){
                     lectura.setTextConsola(getComando());
                     lectura.parseoTexto();
@@ -90,6 +91,9 @@ public class Console extends javax.swing.JFrame {
             }
             else if(banderaUser){
                 lectura.funcionUserAux(contUser,getComando());
+            }
+            else if(banderaPassword){
+                lectura.funcionPasswordAux(contPas,getComando());
             }
         }
     }//GEN-LAST:event_txtAConsoleKeyReleased

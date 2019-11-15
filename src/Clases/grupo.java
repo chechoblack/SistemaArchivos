@@ -14,10 +14,19 @@ import java.util.ArrayList;
 public class grupo {
     private ArrayList<usuarios> listaUsuariosGrupo = new ArrayList<>();
     private ArrayList<archivo> listaArchivos = new ArrayList<>();
-
-    public grupo() {
+    private String nombre;
+    public grupo(String nombre) {
+        this.nombre=nombre;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    
     public ArrayList<usuarios> getListaUsuariosGrupo() {
         return listaUsuariosGrupo;
     }
