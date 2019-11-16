@@ -51,7 +51,7 @@ public class Console extends javax.swing.JFrame {
 
         txtAConsole.setBackground(new java.awt.Color(0, 0, 0));
         txtAConsole.setColumns(20);
-        txtAConsole.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        txtAConsole.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         txtAConsole.setForeground(new java.awt.Color(255, 255, 255));
         txtAConsole.setRows(5);
         txtAConsole.setCaretColor(new java.awt.Color(255, 255, 255));

@@ -64,14 +64,14 @@ public class lectorComandos {
         else if("rm".equals(textoParseado.trim())){
         
         }
-        else if("mv".equals(textoParseado.trim())){
+        else if("mv".equals(textoParseado.trim()) && cadenaEntrada().size()==3 && cadenaEntrada().get(1).toString().trim().equals("filename")){
             funcionMv();
         }
         else if("ls".equals(textoParseado.trim())){
-        
+            funcionLs();
         }
         else if("cd".equals(textoParseado.trim())){
-        
+            funcionCd();
         }
         else if("ln".equals(textoParseado.trim())){
         
@@ -436,10 +436,10 @@ public class lectorComandos {
      * funcion principal para el comando mkdir
      */
     private void funcionMkdir(){
-        String nombre=cadenaEntrada().get(1).toString();
-        directorios nuevoDirectorio = new directorios(nombre, listaDirectorios.size(),directorioActual);
-        directorioActual.setDirectorioHijo(nuevoDirectorio);
-        listaDirectorios.add(nuevoDirectorio);
+        String nombre=cadenaEntrada().get(1).toString();//obtiene el nombre
+        directorios nuevoDirectorio = new directorios(nombre, listaDirectorios.size(),directorioActual);//crea el directorio
+        directorioActual.setDirectorioHijo(nuevoDirectorio);//lo agrega al directorio actual
+        listaDirectorios.add(nuevoDirectorio);//lo agrega al repositorio de directorios
         ventana.escribirMensaje("Directorio Creado\n");
         ventana.ruta=pathSistema()+">";
         ventana.escribirMensaje( ventana.ruta);
@@ -451,16 +451,83 @@ public class lectorComandos {
      * funcion principal del comando mv 
      */
     private void funcionMv(){
-        String nuevoNombre=cadenaEntrada().get(1).toString();
+        String nuevoNombre=cadenaEntrada().get(2).toString();
         if(validarDirectorio(nuevoNombre)!=null){
             validarDirectorio(nuevoNombre);
             directorioActual.getDirectorioPadre().removeDirectorio(directorioActual.getNombre());
             directorioActual.setDirectorioPadre(validarDirectorio(nuevoNombre));
+            if(listaUbicaion.size()>1){
+                listaUbicaion.remove(listaUbicaion.size()-2);
+            }
+            //directorioActual=validarDirectorio(listaUbicaion.get(listaUbicaion.size()-1));
+            ventana.ruta=pathSistema()+">";
+            ventana.escribirMensaje( ventana.ruta);
         }
         else{
             directorioActual.setNombre(nuevoNombre);
+            ventana.ruta=pathSistema()+">";
+            ventana.escribirMensaje( ventana.ruta);
         }
         
+    }
+    /**
+     * funcion principal del comando ls
+     * falta la version recursiva y los archivos
+     * 
+     */
+    private void funcionLs(){
+        if(cadenaEntrada().size()==1){
+            for(directorios directorio: listaDirectorios){
+                if(directorio.getDirectorioPadre()!=null){
+                    if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                        ventana.escribirMensaje("\t|___"+directorio.getNombre()+"\n");
+                    }
+                }
+            }
+            ventana.ruta=pathSistema()+">";
+            ventana.escribirMensaje( ventana.ruta);
+        }
+    }
+    /**
+     * funcion principal para el comando cd
+     */
+    private void funcionCd(){
+        ArrayList<directorios> hijos = directoriosHijos();
+        String nombreDirectorio=cadenaEntrada().get(1).toString();
+        if(!nombreDirectorio.trim().equals("..")){
+            System.out.println("entra");
+            hijos.forEach((directorio) -> {
+                if(directorio.getNombre().trim().equals(nombreDirectorio.trim())){
+                    listaUbicaion.add(nombreDirectorio);
+                    directorioActual=directorio;
+                    ventana.ruta=pathSistema()+">";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+                else{
+                    ventana.ruta=pathSistema()+">";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+            });
+            if(hijos.isEmpty()){
+                ventana.ruta=pathSistema()+">";
+                ventana.escribirMensaje( ventana.ruta);
+            }
+        }
+        else{
+            if(listaUbicaion.size()>0){
+               listaUbicaion.remove(listaUbicaion.size()-1); 
+            }
+            if(listaUbicaion.isEmpty()){
+                directorioActual=listaDirectorios.get(0);
+                ventana.ruta=pathSistema()+">";
+                ventana.escribirMensaje( ventana.ruta);
+            }
+            else{
+                directorioActual=validarDirectorio(listaUbicaion.get(listaUbicaion.size()-1));
+                ventana.ruta=pathSistema()+">";
+                ventana.escribirMensaje( ventana.ruta);
+            }
+        }
     }
     /**
      * arma la cadena de entrada sin espacios y la devuelebe en una lista
@@ -469,9 +536,9 @@ public class lectorComandos {
     private ArrayList cadenaEntrada(){
         String[] textoParseado=textConsola.trim().split(" ");
         ArrayList<String> textoCOmpletoP = new ArrayList();
-        for(int i=0;i<textoParseado.length;i++){
-            if(!textoParseado[i].equals("")){
-                textoCOmpletoP.add(textoParseado[i]);
+        for (String textoParseado1 : textoParseado) {
+            if (!textoParseado1.equals("")) {
+                textoCOmpletoP.add(textoParseado1);
             }
         }
         return textoCOmpletoP;
@@ -519,9 +586,16 @@ public class lectorComandos {
      * funcion que genera el path
      */
     private String pathSistema(){
-        String path=nombreDisco+"\\"+ventana.usuario+"\\"+directorioActual.getNombre();
+        String path=null;
+        if(directorioActual!=null){
+            path=nombreDisco+"\\"+ventana.usuario+"\\"+listaDirectorios.get(0).getNombre();
+        }
+        else{
+            path="Comando";
+        }
         for(String var :listaUbicaion){
-            path+=var+"\\";
+            System.out.println(var);
+            path+="\\"+var;
         }
         return path;
     }
@@ -537,5 +611,19 @@ public class lectorComandos {
             }
         }
         return null;
+    }
+    /**
+     *  devuelve los directorios hijos del directorio actual
+     */
+    private ArrayList<directorios> directoriosHijos(){
+        ArrayList<directorios> hijos=new ArrayList<>();
+        for(directorios directorio : listaDirectorios){
+            if(directorio.getDirectorioPadre()!=null){
+                if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                    hijos.add(directorio);
+                }
+            }
+        }
+        return hijos;
     }
 }
