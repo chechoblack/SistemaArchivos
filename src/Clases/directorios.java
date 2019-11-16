@@ -17,11 +17,12 @@ public class directorios {
     private ArrayList<directorios> listaDirectorios = new ArrayList();
     private ArrayList<archivo> listaArchivos=new ArrayList<>();
     private directorios directorioPadre;
-
-    public directorios(String nombre, int id, directorios directorioPadre) {
+    private usuarios usurioPadre;
+    public directorios(String nombre, int id, directorios directorioPadre,usuarios usurio) {
         this.nombre = nombre;
         this.id = id;
         this.directorioPadre = directorioPadre;
+        this.usurioPadre=usurio;
     }
 
     public String getNombre() {
@@ -47,6 +48,23 @@ public class directorios {
     public void setDirectorioPadre(directorios directorioPadre) {
         this.directorioPadre = directorioPadre;
     }
+
+    public usuarios getUsurioPadre() {
+        return usurioPadre;
+    }
+
+    public void setUsurioPadre(usuarios usurioPadre) {
+        this.usurioPadre = usurioPadre;
+    }
+
+    public ArrayList<directorios> getListaDirectorios() {
+        return listaDirectorios;
+    }
+
+    public ArrayList<archivo> getListaArchivos() {
+        return listaArchivos;
+    }
+    
     public void setDirectorioHijo(directorios directorio){
         this.listaDirectorios.add(directorio);
     }

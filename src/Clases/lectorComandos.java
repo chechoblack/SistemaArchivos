@@ -23,6 +23,7 @@ public class lectorComandos {
     private ArrayList<grupo> listaGrupos = new ArrayList<>();
     private ArrayList<String> listaUbicaion = new ArrayList<>();
     private ArrayList<directorios> listaDirectorios= new ArrayList<>();
+    private ArrayList<archivo> listaArchivos= new ArrayList<>();
     private funcionalidadPrincipal disco;
     private directorios directorioActual;
     public lectorComandos() {
@@ -73,14 +74,17 @@ public class lectorComandos {
         else if("cd".equals(textoParseado.trim())){
             funcionCd();
         }
+        else if("whereis".equals(textoParseado.trim())){
+        
+        }
         else if("ln".equals(textoParseado.trim())){
         
         }
-        else if("touch".equals(textoParseado.trim())){
-        
+        else if("touch".equals(textoParseado.trim())&& cadenaEntrada().size()==2){
+            funcionTouch();
         }
         else if("cat".equals(textoParseado.trim())){
-        
+            funcionCat();
         }
         else if("chown".equals(textoParseado.trim())){
         
@@ -197,7 +201,7 @@ public class lectorComandos {
         */
         ventana.escribirMensaje("Creadon Disco....\n");
         nombreDisco="miDiscoDuro";
-        directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null);
+        directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null,null);
         listaDirectorios.add(nuevoDirectorio);
         directorioActual=nuevoDirectorio;
         String tamaño = cadenaEntrada().get(1).toString();
@@ -206,7 +210,7 @@ public class lectorComandos {
         disco.EscribirInicioBloque();
         ventana.escribirMensaje("Disco creado con exito\n");
         ClaveRootDefault=cadenaEntrada().get(2).toString();
-        usuarios root=new usuarios("Root","rot",ClaveRootDefault);
+        usuarios root=new usuarios("Root","root",ClaveRootDefault);
         listaUsuarios.add(root);
         ventana.ruta=pathSistema()+">";
         ventana.escribirMensaje( ventana.ruta);
@@ -437,7 +441,7 @@ public class lectorComandos {
      */
     private void funcionMkdir(){
         String nombre=cadenaEntrada().get(1).toString();//obtiene el nombre
-        directorios nuevoDirectorio = new directorios(nombre, listaDirectorios.size(),directorioActual);//crea el directorio
+        directorios nuevoDirectorio = new directorios(nombre, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
         directorioActual.setDirectorioHijo(nuevoDirectorio);//lo agrega al directorio actual
         listaDirectorios.add(nuevoDirectorio);//lo agrega al repositorio de directorios
         ventana.escribirMensaje("Directorio Creado\n");
@@ -481,6 +485,14 @@ public class lectorComandos {
                 if(directorio.getDirectorioPadre()!=null){
                     if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
                         ventana.escribirMensaje("\t|___"+directorio.getNombre()+"\n");
+                    }
+                }
+            }
+            for(archivo archivo: listaArchivos){
+                if(archivo.getCrador()!=null){
+                    System.out.println("que pasa");
+                    if(archivo.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                        ventana.escribirMensaje("\t|___-"+archivo.getNombre()+"\n");
                     }
                 }
             }
@@ -528,6 +540,31 @@ public class lectorComandos {
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
+    }
+    /**
+     * funcion principal de touch
+     */
+    private void funcionTouch(){
+        System.out.println(verificarUsuarioPassword(ventana.usuario));
+        if(!ventana.usuario.equals("")){
+            archivo nuevo=new archivo(cadenaEntrada().get(1).toString(), verificarUsuarioPassword(ventana.usuario),directorioActual);
+            listaArchivos.add(nuevo);
+            ventana.ruta=pathSistema()+">";
+            ventana.escribirMensaje( ventana.ruta);
+        }
+        else{
+            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n");
+            ventana.ruta=pathSistema()+">";
+            ventana.escribirMensaje( ventana.ruta);
+        }
+    }
+    /**
+     * funcion principal del comando cat
+     */
+    private void funcionCat(){
+        ventana.escribirMensaje(validarArchivo(cadenaEntrada().get(1).toString().trim()).getContenido()+"\n");
+        ventana.ruta=pathSistema()+">";
+        ventana.escribirMensaje( ventana.ruta);
     }
     /**
      * arma la cadena de entrada sin espacios y la devuelebe en una lista
@@ -625,5 +662,18 @@ public class lectorComandos {
             }
         }
         return hijos;
+    }
+    /**
+     * devuele el archivo 
+     * @param nombre
+     * @return 
+     */
+    private archivo validarArchivo(String nombre){
+        for(archivo usu : listaArchivos){
+            if(usu.getNombre().equals(nombre.trim())){
+                return usu;
+            }
+        }
+        return null;
     }
 }
