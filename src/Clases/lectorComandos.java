@@ -77,7 +77,7 @@ public class lectorComandos {
             funcionCd();
         }
         else if("whereis".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
-        
+            pathBusqueda(cadenaEntrada().get(1).toString());
         }
         else if("ln".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
         
@@ -202,7 +202,10 @@ public class lectorComandos {
         */
         ventana.escribirMensaje("Creadon Disco....\n");
         nombreDisco="miDiscoDuro";
+        grupo nuevoGrupo = new grupo(nombreDisco+"Grup");
         directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null,null);
+        nuevoDirectorio.setGrupo(nuevoGrupo);
+        listaGrupos.add(nuevoGrupo);
         listaDirectorios.add(nuevoDirectorio);
         directorioActual=nuevoDirectorio;
         String tamaño = cadenaEntrada().get(1).toString();
@@ -509,19 +512,16 @@ public class lectorComandos {
             ventana.escribirMensaje( ventana.ruta);
         }
         else if(validarDirectorio(nombre)!=null){
-            System.out.println("entra");
             for(int i=1;i<listaDirectorios.size();i++){
                 if(listaDirectorios.get(i).getDirectorioPadre().getNombre().trim().equals(nombre.trim())){
                     listaDirectorios.remove(i);
                 }
             }
-            System.out.println("pasa");
             for(int i=0;i<listaArchivos.size();i++){
                 if(listaArchivos.get(i).getDirectorioPadre().getNombre().trim().equals(nombre.trim())){
                     listaArchivos.remove(i);
                 }
             }
-            System.out.println("que paso");
             for(int i=1;i<listaDirectorios.size();i++){
                 if(listaDirectorios.get(i).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim()) 
                         && listaDirectorios.get(i).getNombre().trim().equals(nombre)){
@@ -990,7 +990,6 @@ public class lectorComandos {
         String[] textoParseado=path.trim().split("/");
         ArrayList<String> textoCOmpletoP = new ArrayList();
         for (String textoParseado1 : textoParseado) {
-            System.out.println(textoParseado1);
             if (!textoParseado1.equals("")) {
                 textoCOmpletoP.add(textoParseado1.trim());
             }
@@ -1054,11 +1053,38 @@ public class lectorComandos {
         String[] textoParseado=lista.trim().split(",");
         ArrayList<String> textoCOmpletoP = new ArrayList();
         for (String textoParseado1 : textoParseado) {
-            System.out.println(textoParseado1);
             if (!textoParseado1.equals("")) {
                 textoCOmpletoP.add(textoParseado1.trim());
             }
         }
         return textoCOmpletoP;
+    }
+    private ArrayList<String> pathBusqueda(String nombre){
+        ArrayList<String> paths =new ArrayList<>();
+        for(directorios directorio : listaDirectorios){
+            System.out.println("Principal: "+directorio.getNombre());
+            System.out.println(pathss(directorio.getListaDirectorios(), nombre, "", ""));
+            paths.add(pathss(directorio.getListaDirectorios(), nombre, "", ""));
+        }
+        return paths;
+    }
+    private String pathss(ArrayList<directorios> listaDirectorio,String nombre,String path,String ultimo){
+        if(ultimo.equals(nombre)){
+            System.out.println("path: "+path);
+            return path;
+        }
+        else if(listaDirectorio.isEmpty()){
+            return path;
+        }
+        else{
+            for(directorios directorio : listaDirectorio){
+                System.out.println(directorio.getNombre().trim());
+                System.out.println(nombre.trim());
+                if(directorio.getNombre().trim().equals(nombre.trim())){
+                    path+=pathss(listaDirectorio, nombre, directorio.getNombre().trim()+"/"+path, directorio.getNombre().trim());
+                }
+            }
+        }
+        return "-1";
     }
 }
