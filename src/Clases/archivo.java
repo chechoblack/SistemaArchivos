@@ -22,6 +22,7 @@ public class archivo {
     private int estado=0;
     private Calendar fecha = new GregorianCalendar();
     private int permiso=7; 
+    private grupo grupo;
     public archivo(String nombre, usuarios creador,directorios directorio) {
         this.nombre = nombre;
         this.creador = creador;
@@ -64,6 +65,14 @@ public class archivo {
         this.creador = creador;
     }
 
+    public grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(grupo grupo) {
+        this.grupo = grupo;
+    }
+    
     public directorios getDirectorioPadre() {
         return directorioPadre;
     }
@@ -94,7 +103,7 @@ public class archivo {
     
     @Override
     public String toString() {
-        return "File{\n" + " Nombre= " + nombre + "\n Tama\u00f1o= " + Tamaño + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + '}'+"\n";
+        return "File{\n" + " Nombre= " + nombre +"\n Grupo= "+grupo.getNombre().trim()+ "\n Tama\u00f1o= " + Tamaño + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + '}'+"\n";
     }
     
 }

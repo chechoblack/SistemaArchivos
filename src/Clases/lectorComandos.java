@@ -92,7 +92,7 @@ public class lectorComandos {
             funcionChown();
         }
         else if("chgrp".equals(textoParseado.trim()) && cadenaEntrada().size()<=4){
-        
+            funcionChgrp();
         }
         else if("chmod".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
         
@@ -106,7 +106,7 @@ public class lectorComandos {
         else if("viewFilesOpen".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
             funcionViewFilesOpen();
         }
-        else if("viewFCB".equals(textoParseado.trim())&& cadenaEntrada().size()==1){
+        else if("viewFCB".equals(textoParseado.trim())&& cadenaEntrada().size()==2){
             funcionViewFCB();
         }
         else if("infoFS".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
@@ -227,6 +227,7 @@ public class lectorComandos {
             ventana.banderaUser=true;
             ventana.contUser=1;
             usuarioTemp.add(cadenaEntrada().get(1));//usuario
+            grupo nuevoGrupo = new grupo("Grup");
         }
         else{
             ventana.escribirMensaje("Debe ingresar como usuario root para crear un usuario\n");
@@ -274,6 +275,13 @@ public class lectorComandos {
                     usuarios nuevoUsuario = new usuarios(usuarioTemp.get(1).toString(), usuarioTemp.get(0).toString(), usuarioTemp.get(2).toString());
                     //verifia si el usuario que se agrego ya se encuentra agregado
                     if(!verificarUsuarioExistente(nuevoUsuario)){
+                        grupo nuevoGrupo = new grupo(usuarioTemp.get(0).toString().trim()+"Grup");
+                        nuevoGrupo.setUsuarioGrup(nuevoUsuario);
+                        directorios nuevo = new directorios(usuarioTemp.get(0).toString().trim(), listaDirectorios.size(),listaDirectorios.get(0),nuevoUsuario);
+                        nuevoGrupo.setDirectorioGrup(nuevo);
+                        nuevo.setGrupo(nuevoGrupo);
+                        listaDirectorios.add(nuevo);
+                        listaGrupos.add(nuevoGrupo);
                         listaUsuarios.add(nuevoUsuario);
                         ventana.ruta=pathSistema()+":";
                         ventana.escribirMensaje( ventana.ruta);
@@ -373,7 +381,12 @@ public class lectorComandos {
     private void funcionGroupadd(){
         if(!ventana.usuario.equals("")){
             grupo nuevoGrupo = new grupo(cadenaEntrada().get(1).toString());
+            directorios nuevo = new directorios(cadenaEntrada().get(1).toString(),listaDirectorios.size(),listaDirectorios.get(0), validarUsuario(ventana.usuario));
             listaGrupos.add(nuevoGrupo);
+            nuevo.setGrupo(nuevoGrupo);
+            nuevoGrupo.setDirectorioGrup(nuevo);
+            listaDirectorios.add(nuevo);
+            ventana.escribirMensaje(" Grupo creado\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -451,6 +464,8 @@ public class lectorComandos {
                 }
                 if(directoriosHijos().isEmpty()){
                     directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
+                    nuevo.setGrupo(directorioActual.getGrupo());
+                    directorioActual.getGrupo().setDirectorioGrup(nuevo);
                     directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
                     listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
                     ventana.escribirMensaje("Directorio Creado\n");
@@ -458,6 +473,8 @@ public class lectorComandos {
                 }
                 else if(!bander){
                     directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
+                    nuevo.setGrupo(directorioActual.getGrupo());
+                    directorioActual.getGrupo().setDirectorioGrup(nuevo);
                     directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
                     listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
                     ventana.escribirMensaje("Directorio Creado\n");
@@ -628,13 +645,19 @@ public class lectorComandos {
             }
             if(archivosHijos().isEmpty()){
                 archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
+                nuevo.setGrupo(directorioActual.getGrupo());
+                directorioActual.getGrupo().setArchivoGrup(nuevo);
                 listaArchivos.add(nuevo);
+                ventana.escribirMensaje("Archivo creado\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
             else if(!bander){
                 archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
+                nuevo.setGrupo(directorioActual.getGrupo());
+                directorioActual.getGrupo().setArchivoGrup(nuevo);
                 listaArchivos.add(nuevo);
+                ventana.escribirMensaje("Archivo creado\n");
                 ventana.ruta=pathSistema()+":";
                 bander=true;
                 ventana.escribirMensaje( ventana.ruta);
@@ -686,6 +709,33 @@ public class lectorComandos {
             ventana.escribirMensaje(" Error, no se encontro el usuario\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
+        }
+    }
+    /**
+     * 
+     */
+    private void funcionChgrp(){
+        if(validarDirectorio(cadenaEntrada().get(2).toString())!=null){
+            for(directorios directorio : directoriosHijos()){
+                if(directorio.getDirectorioPadre()!=null){
+                    if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                        directorio.setGrupo(validarGrupo(cadenaEntrada().get(1).toString()));
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
+                }
+            }
+        }
+        else if(validarArchivo(cadenaEntrada().get(2).toString())!=null){
+            for(archivo directorio : archivosHijos()){
+                if(directorio.getDirectorioPadre()!=null){
+                    if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                        directorio.setGrupo(validarGrupo(cadenaEntrada().get(1).toString()));
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
+                }
+            }
         }
     }
     /**
@@ -913,6 +963,19 @@ public class lectorComandos {
     private usuarios validarUsuario(String nombre){
         for(usuarios usu : listaUsuarios){
             if(usu.getNombreUsuario().equals(nombre.trim())){
+                return usu;
+            }
+        }
+        return null;
+    }
+    /**
+     * 
+     * @param nombre
+     * @return 
+     */
+    private grupo validarGrupo(String nombre){
+        for(grupo usu : listaGrupos){
+            if(usu.getNombre().equals(nombre.trim())){
                 return usu;
             }
         }

@@ -18,6 +18,7 @@ public class directorios {
     private ArrayList<archivo> listaArchivos=new ArrayList<>();
     private directorios directorioPadre;
     private usuarios usurioPadre;
+    private grupo grupo;
     public directorios(String nombre, int id, directorios directorioPadre,usuarios usurio) {
         this.nombre = nombre;
         this.id = id;
@@ -57,6 +58,14 @@ public class directorios {
         this.usurioPadre = usurioPadre;
     }
 
+    public grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(grupo grupo) {
+        this.grupo = grupo;
+    }
+    
     public ArrayList<directorios> getListaDirectorios() {
         return listaDirectorios;
     }
