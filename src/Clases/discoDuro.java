@@ -13,15 +13,19 @@ import java.io.RandomAccessFile;
  *
  * @author ser
  */
-public class funcionalidadPrincipal {
+public class discoDuro {
 
     int tamañoDisco;
     String Acceso = "miDiscoDuro.fs";
     int Variable= 256;
     int CantidadBloques;
     
-    public funcionalidadPrincipal(int tamañoDisco) {
+    public discoDuro(int tamañoDisco) {
         this.tamañoDisco=tamañoDisco;
+    }
+
+    public int getTamañoDisco() {
+        return tamañoDisco;
     }
     
     public void CreacionDisco() throws FileNotFoundException, IOException{

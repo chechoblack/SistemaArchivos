@@ -14,7 +14,9 @@ import java.util.ArrayList;
 public class grupo {
     private ArrayList<usuarios> listaUsuariosGrupo = new ArrayList<>();
     private ArrayList<archivo> listaArchivos = new ArrayList<>();
+    private ArrayList<directorios> listaDirectorios = new ArrayList<>();
     private String nombre;
+    private int permiso=7;
     public grupo(String nombre) {
         this.nombre=nombre;
     }
@@ -34,10 +36,29 @@ public class grupo {
     public ArrayList<archivo> getListaArchivos() {
         return listaArchivos;
     }
+
+    public ArrayList<directorios> getListaDirectorios() {
+        return listaDirectorios;
+    }
+    
     public void setUsuarioGrup(usuarios usuario){
         this.listaUsuariosGrupo.add(usuario);
     }
+    
     public void setArchivoGrup(archivo archi){
         this.listaArchivos.add(archi);
     }
+    
+    public void setDirectorioGrup(directorios directorio){
+        this.listaDirectorios.add(directorio);
+    }
+
+    public int getPermiso() {
+        return permiso;
+    }
+
+    public void setPermiso(int permiso) {
+        this.permiso = permiso;
+    }
+    
 }

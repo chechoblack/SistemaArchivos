@@ -29,6 +29,7 @@ public class Console extends javax.swing.JFrame {
     public String usuario="";
     public String nombreUsuario="";
     public String ruta="Comando>";
+    public String respaldo="";
     public Console() {
         initComponents();
         escribirMensaje("AA [Versión 0.1](c) 2019 AA Corporation. Todos los derechos reservados.\n");
@@ -103,9 +104,16 @@ public class Console extends javax.swing.JFrame {
                 lectura.funcionPasswordAux(contPas,getComando());
             }
         }
+        else if(evt.getKeyCode()==8){
+            if(this.posicionCursor>txtAConsole.getText().length()){
+                txtAConsole.setText(" ");
+                txtAConsole.setText(respaldo);
+            }
+        }
     }//GEN-LAST:event_txtAConsoleKeyReleased
     public void escribirMensaje(String mensaje){
         txtAConsole.setText(txtAConsole.getText()+mensaje);
+        respaldo=txtAConsole.getText();
         this.posicionCursor=txtAConsole.getText().length();
         txtAConsole.setCaretPosition(posicionCursor);
     }

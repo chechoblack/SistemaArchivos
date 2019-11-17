@@ -78,4 +78,11 @@ public class directorios {
             }
         }
     }
+    public void removeArchivo(String nombre){
+        for(int i=0;i<listaArchivos.size();i++){
+            if(listaArchivos.get(i).getNombre().trim().equals(nombre.trim())){
+                listaArchivos.remove(i);
+            }
+        }
+    }
 }
