@@ -90,8 +90,10 @@ public class directorios {
     public void removeArchivo(String nombre){
         for(int i=0;i<listaArchivos.size();i++){
             if(listaArchivos.get(i).getNombre().trim().equals(nombre.trim())){
+                System.out.println(listaArchivos.get(i).getNombre());
                 listaArchivos.remove(i);
             }
         }
+        System.out.println("Tamaño lista hijos: "+listaArchivos.size());
     }
 }
