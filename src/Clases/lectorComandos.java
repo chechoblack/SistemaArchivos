@@ -509,6 +509,7 @@ public class lectorComandos {
      */
     private void funcionRm(){
         String nombre=cadenaEntrada().get(1).toString();
+        String[] r=nombre.split("/");
         if(validarArchivo(nombre)!=null){
             for(int i=0;i<listaArchivos.size();i++){
                 if(listaArchivos.get(i).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim()) 
@@ -520,7 +521,14 @@ public class lectorComandos {
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
-        else if(validarDirectorio(nombre)!=null){
+        else if(validarDirectorio(nombre)!=null && !r[0].trim().equals("-R") && validarDirectorio(nombre).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+            System.out.println("tamaño: "+listaDirectorios.size());
+            
+            ventana.escribirMensaje(" Elimicacion exitosa\n");
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
+        }
+        else if(validarPath(nombre)!=null && r[0].trim().equals("-R")){
             for(int i=1;i<listaDirectorios.size();i++){
                 if(listaDirectorios.get(i).getDirectorioPadre().getNombre().trim().equals(nombre.trim())){
                     listaDirectorios.remove(i);
@@ -532,12 +540,13 @@ public class lectorComandos {
                 }
             }
             for(int i=1;i<listaDirectorios.size();i++){
-                if(listaDirectorios.get(i).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim()) 
-                        && listaDirectorios.get(i).getNombre().trim().equals(nombre)){
+                if(listaDirectorios.get(i).getDirectorioPadre()==null){
                     listaDirectorios.remove(i);
                 }
             }
-            ventana.escribirMensaje(" Elimicacion exitosa\n");
+            validarPath(nombre).removeDirectorio(validarPath(nombre).getNombre());  
+            validarPath(nombre).setDirectorioPadre(null);
+            ventana.escribirMensaje(" Elimicacion exitosa2\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -554,8 +563,6 @@ public class lectorComandos {
     private void funcionMv(){
         String nuevoNombre=cadenaEntrada().get(1).toString();
         String nombreMover=cadenaEntrada().get(2).toString();
-        System.out.println(validarPath(nombreMover).getDirectorioPadre().getNombre());
-        System.out.println(validarPath(nombreMover).getNombre());
         if(validarArchivo(nuevoNombre)!=null && validarPath(nombreMover)!=null){
             if(validarArchivo(nuevoNombre).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
                 validarArchivo(nuevoNombre).getDirectorioPadre().removeArchivo(validarArchivo(nuevoNombre).getNombre());
@@ -777,12 +784,7 @@ public class lectorComandos {
             int privilegioGrupo=Integer.parseInt(privilegios)%10;
             String archivo=cadenaEntrada().get(2).toString();
             boolean bander=false;
-            System.out.println("privilegios: "+privilegios);
-            System.out.println("ar: "+privilegioArchivo);
-            System.out.println("dir: "+privilegioGrupo);
-            System.out.println("tamaño: "+archivosHijos().size());
             for(archivo archi : archivosHijos()){
-                System.out.println(archi.getNombre());
                 if(archi.getNombre().trim().equals(archivo.trim())){
                     archi.setPermiso(privilegioArchivo);
                     archi.getGrupo().setPermiso(privilegioGrupo);
@@ -1104,7 +1106,7 @@ public class lectorComandos {
         String[] textoParseado=path.trim().split("/");
         ArrayList<String> textoCOmpletoP = new ArrayList();
         for (String textoParseado1 : textoParseado) {
-            if (!textoParseado1.equals("")) {
+            if (!textoParseado1.equals("") && !textoParseado1.equals("-R")) {
                 textoCOmpletoP.add(textoParseado1.trim());
             }
         }
@@ -1131,9 +1133,7 @@ public class lectorComandos {
                     }
                 }
                 else{
-                    if(listaDirectorios.get(0).getNombre().trim().equals(textoCOmpletoP.get(i).trim())){
-                        bander=listaDirectorios.get(0);
-                    }
+                    bander=validarDirectorio(textoCOmpletoP.get(i).trim());
                     break;
                 }
             }else{
@@ -1173,5 +1173,4 @@ public class lectorComandos {
         }
         return textoCOmpletoP;
     }
-   
 }
