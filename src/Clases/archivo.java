@@ -107,6 +107,6 @@ public class archivo {
     
     @Override
     public String toString() {
-        return "File{\n" + " Nombre= " + nombre +"\n Grupo= "+grupo.getNombre().trim()+ "\n Tama\u00f1o= " + Tamaño + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + '}'+"\n";
+        return "File{\n" + " Nombre= " + nombre +"\n Grupo= "+grupo.getNombre().trim()+ "\n Tama\u00f1o= " + Tamaño + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + " \n Permiso: "+permiso+ '}'+"\n";
     }
 }

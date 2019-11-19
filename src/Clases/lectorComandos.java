@@ -95,8 +95,8 @@ public class lectorComandos {
         else if("chgrp".equals(textoParseado.trim()) && cadenaEntrada().size()<=4){
             funcionChgrp();//falta terminar -r
         }
-        else if("chmod".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
-            //falta terminar
+        else if("chmod".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
+           funcionChmod();
         }
         else if("openFile".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
             funcionOpenFile();
@@ -765,6 +765,42 @@ public class lectorComandos {
                     }
                 }
             }
+        }
+    }
+    /**
+     * 
+     */
+    private void funcionChmod(){
+        try {
+            String privilegios=cadenaEntrada().get(1).toString();
+            int privilegioArchivo=Integer.parseInt(privilegios)/10;//73-(73-73%10)
+            int privilegioGrupo=Integer.parseInt(privilegios)%10;
+            String archivo=cadenaEntrada().get(2).toString();
+            boolean bander=false;
+            System.out.println("privilegios: "+privilegios);
+            System.out.println("ar: "+privilegioArchivo);
+            System.out.println("dir: "+privilegioGrupo);
+            System.out.println("tamaño: "+archivosHijos().size());
+            for(archivo archi : archivosHijos()){
+                System.out.println(archi.getNombre());
+                if(archi.getNombre().trim().equals(archivo.trim())){
+                    archi.setPermiso(privilegioArchivo);
+                    archi.getGrupo().setPermiso(privilegioGrupo);
+                    bander=true;
+                    ventana.escribirMensaje(" Ejecución exitosa");
+                    ventana.ruta=pathSistema()+":";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+            }
+            if(!bander){
+                ventana.escribirMensaje(" El archivo no pertenece al directorio actual\n");
+                ventana.ruta=pathSistema()+":";
+                ventana.escribirMensaje( ventana.ruta);
+            }
+        } catch (Exception e) {
+            ventana.escribirMensaje(" Verifique los permisos ingresados\n");
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
         }
     }
     /**
