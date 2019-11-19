@@ -27,6 +27,7 @@ public class lectorComandos {
     private ArrayList<directorios> listaDirectorios= new ArrayList<>();
     private ArrayList<archivo> listaArchivos= new ArrayList<>();
     private ArrayList<archivo> listaArchivosOpen= new ArrayList<>();
+    private ArrayList<String> listaBusqueda= new ArrayList<>();
     private discoDuro disco;
     private directorios directorioActual;
     public lectorComandos() {
@@ -78,7 +79,7 @@ public class lectorComandos {
             funcionCd();
         }
         else if("whereis".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
-            //pathBusqueda(cadenaEntrada().get(1).toString());//falta terminar
+            funcionWhereis();
         }
         else if("ln".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
             //falta terminar
@@ -120,7 +121,7 @@ public class lectorComandos {
             funcionPoweroff();
         }
         else{
-            ventana.escribirMensaje("Comando no existente\n");
+            ventana.escribirMensaje("Comando no existente\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -144,7 +145,7 @@ public class lectorComandos {
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se ha creado ningun root\n");
+            ventana.escribirMensaje(" Error, no se ha creado ningun root\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -160,11 +161,12 @@ public class lectorComandos {
                 ventana.banderaSU=false;
                 ventana.usuario="root";
                 banderaIngresoPassword=false;
+                ventana.escribirMensaje("\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
             else{
-                ventana.escribirMensaje(" Error, Contraseña incorrecta\n");
+                ventana.escribirMensaje(" Error, Contraseña incorrecta\n\n");
                 ventana.escribirMensaje(" Password root: ");
             }
         }
@@ -183,14 +185,14 @@ public class lectorComandos {
                     ventana.banderaPassword=false;
                 }
                 else{
-                    ventana.escribirMensaje(" Error, Contraseña incorrecta\n");
+                    ventana.escribirMensaje(" Error, Contraseña incorrecta\n\n");
                     ventana.escribirMensaje(" Password root: ");
                 }
             }
             else{
                 ventana.banderaSU=false;
                 ventana.banderaPassword=false;
-                ventana.escribirMensaje(" Error, Usuario no existente\n");
+                ventana.escribirMensaje(" Error, Usuario no existente\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -216,14 +218,14 @@ public class lectorComandos {
             ventana.escribirMensaje("Creadon Disco....\n");
             disco.CreacionDisco();
             disco.EscribirInicioBloque();
-            ventana.escribirMensaje("Disco creado con exito\n");
+            ventana.escribirMensaje("Disco creado con exito\n\n");
             ClaveRootDefault=cadenaEntrada().get(2).toString();
             usuarios root=new usuarios("Root","root",ClaveRootDefault);
             listaUsuarios.add(root);
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         } catch (Exception e) {
-            ventana.escribirMensaje("Error, verificar el dato del tamaño del disco\n");
+            ventana.escribirMensaje("Error, verificar el dato del tamaño del disco\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -242,7 +244,7 @@ public class lectorComandos {
             grupo nuevoGrupo = new grupo("Grup");
         }
         else{
-            ventana.escribirMensaje("Debe ingresar como usuario root para crear un usuario\n");
+            ventana.escribirMensaje("Debe ingresar como usuario root para crear un usuario\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -263,7 +265,7 @@ public class lectorComandos {
                 }
                 else{
                     //si esta vacio el nombre lo vuelve a solicitar 
-                    ventana.escribirMensaje(" Error, debe dijitar un caracter para el nombre\n");
+                    ventana.escribirMensaje(" Error, debe dijitar un caracter para el nombre\n\n");
                     ventana.escribirMensaje(" Nombre completo: ");
                     ventana.banderaUser=true;
                     ventana.contUser=1;
@@ -276,7 +278,7 @@ public class lectorComandos {
                 }
                 else{
                     //si esta vacia la contraseña la vuelve a solicitar
-                    ventana.escribirMensaje(" Error, debe dijitar un caracter la contraseña\n");
+                    ventana.escribirMensaje(" Error, debe dijitar un caracter la contraseña\n\n");
                     ventana.escribirMensaje(" Contraseña: ");
                     ventana.contUser=2;
                 }   break;
@@ -299,7 +301,7 @@ public class lectorComandos {
                         ventana.escribirMensaje( ventana.ruta);
                     }else{
                         //le indica al usuario si nickname que desea agregar ya esta siendo utilizado
-                        ventana.escribirMensaje("El usuario ya se encuentra registrado\n");
+                        ventana.escribirMensaje("El usuario ya se encuentra registrado\n\n");
                         ventana.ruta=pathSistema()+":";
                         ventana.escribirMensaje( ventana.ruta);
                     }
@@ -329,7 +331,7 @@ public class lectorComandos {
             }
         }
         else{
-            ventana.escribirMensaje("Debe ingresar como usuario root para crear un usuario\n");
+            ventana.escribirMensaje("Debe ingresar como usuario root para crear un usuario\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -349,7 +351,7 @@ public class lectorComandos {
             }
             else{
                 //si esta vacio el nombre lo vuelve a solicitar 
-                ventana.escribirMensaje(" Error, debe dijitar un caracter para la contraseña\n");
+                ventana.escribirMensaje(" Error, debe dijitar un caracter para la contraseña\n\n");
                 ventana.escribirMensaje(" Contraseña nueva: ");
                 ventana.contPas=1;
             }
@@ -364,24 +366,24 @@ public class lectorComandos {
                     //verifica que la contraseña no venga ""
                     if(!contra.trim().equals("")){
                         usuario.setPassword(contra);
-                        ventana.escribirMensaje(" Cambiada con exito\n");
+                        ventana.escribirMensaje(" Cambiada con exito\n\n");
                         ventana.ruta=pathSistema()+":";
                         ventana.escribirMensaje(ventana.ruta);
                         ventana.banderaPassword=false;
                     }
                     else{
-                        ventana.escribirMensaje(" Error, Contraseña incorrecta\n");
+                        ventana.escribirMensaje(" Error, Contraseña incorrecta\n\n");
                         ventana.escribirMensaje(" Password root: ");
                     }
                 }
                 else{
-                    ventana.escribirMensaje(" Error, Usuario no existente\n");
+                    ventana.escribirMensaje(" Error, Usuario no existente\n\n");
                     ventana.ruta=pathSistema()+":";
                     ventana.escribirMensaje( ventana.ruta);
                     ventana.banderaPassword=false;
                 }
             }else{
-                ventana.escribirMensaje(" Error, las contraseñas no coinciden\n");
+                ventana.escribirMensaje(" Error, las contraseñas no coinciden\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -398,12 +400,12 @@ public class lectorComandos {
             nuevo.setGrupo(nuevoGrupo);
             nuevoGrupo.setDirectorioGrup(nuevo);
             listaDirectorios.add(nuevo);
-            ventana.escribirMensaje(" Grupo creado\n");
+            ventana.escribirMensaje(" Grupo creado\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n");
+            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -413,7 +415,7 @@ public class lectorComandos {
      */
     private void funcionWhoami(){
         ventana.escribirMensaje(" Username: "+ventana.usuario+"\n");
-        ventana.escribirMensaje(" Full name: "+ventana.nombreUsuario+"\n");
+        ventana.escribirMensaje(" Full name: "+ventana.nombreUsuario+"\n\n");
         ventana.ruta=pathSistema()+":";
         ventana.escribirMensaje( ventana.ruta);
     }
@@ -437,13 +439,13 @@ public class lectorComandos {
                 }
             }else
             {
-                ventana.escribirMensaje(" Error, no se encontro ningun usuario con ese nombre\n");
+                ventana.escribirMensaje(" Error, no se encontro ningun usuario con ese nombre\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n");
+            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -480,7 +482,7 @@ public class lectorComandos {
                     directorioActual.getGrupo().setDirectorioGrup(nuevo);
                     directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
                     listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
-                    ventana.escribirMensaje("Directorio Creado\n");
+                    ventana.escribirMensaje("Directorio Creado\n\n");
                     
                 }
                 else if(!bander){
@@ -489,17 +491,17 @@ public class lectorComandos {
                     directorioActual.getGrupo().setDirectorioGrup(nuevo);
                     directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
                     listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
-                    ventana.escribirMensaje("Directorio Creado\n");
+                    ventana.escribirMensaje("Directorio Creado\n\n");
                 }
                 else{
-                    ventana.escribirMensaje("Directorio existente\n");
+                    ventana.escribirMensaje("Directorio existente\n\n");
                 }
             }
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n");
+            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -522,7 +524,7 @@ public class lectorComandos {
                         listaArchivos.set(i, null);
                     }
                 }
-                ventana.escribirMensaje(" Elimicacion exitosa del archivo"+nombre+"\n");
+                ventana.escribirMensaje(" Elimicacion exitosa del archivo "+nombre+"\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -541,7 +543,7 @@ public class lectorComandos {
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n");
+            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -558,18 +560,18 @@ public class lectorComandos {
                 validarArchivo(nuevoNombre).getDirectorioPadre().removeArchivo(validarArchivo(nuevoNombre).getNombre());
                 validarArchivo(nuevoNombre).setDirectorioPadre(validarPath(nombreMover));
                 validarPath(nombreMover).setArchivo( validarArchivo(nuevoNombre));
-                ventana.escribirMensaje(" Archivo movido con exito\n");
+                ventana.escribirMensaje(" Archivo movido con exito\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
             else{
-                ventana.escribirMensaje(" El archivo no existe en este directorio\n");
+                ventana.escribirMensaje(" El archivo no existe en este directorio\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
         else{
-            ventana.escribirMensaje(" El archivo no existe\n");
+            ventana.escribirMensaje(" El archivo no existe\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -621,20 +623,30 @@ public class lectorComandos {
             ventana.escribirMensaje( ventana.ruta);
         }
     }
+    /**
+     * 
+     * @param listaDirectorios
+     * @param listaArchivos
+     * @param cont 
+     */
     private void funcionLsAux(ArrayList<directorios> listaDirectorios,ArrayList<archivo>listaArchivos,int cont){
-        System.out.println("llega");
         for(directorios directorio: listaDirectorios){
-                if(directorio.getDirectorioPadre()!=null){
-                   ventana.escribirMensaje(crearTap(cont)+" |_________"+directorio.getNombre()+"\n");
-                   funcionLsAux(directorio.getListaDirectorios(),directorio.getListaArchivos(),cont+1);
-                }
+            if(directorio.getDirectorioPadre()!=null){
+               ventana.escribirMensaje(crearTap(cont)+" |_________"+directorio.getNombre()+"\n");
+               funcionLsAux(directorio.getListaDirectorios(),directorio.getListaArchivos(),cont+1);
             }
-            for(archivo archivo: listaArchivos){
-                if(archivo.getCreador()!=null){
-                    ventana.escribirMensaje(crearTap(cont)+" |_________"+archivo.getNombre()+"\n");
-                }
+        }
+        for(archivo archivo: listaArchivos){
+            if(archivo.getCreador()!=null){
+                ventana.escribirMensaje(crearTap(cont)+" |_________-"+archivo.getNombre()+"\n");
             }
+        }
     }
+    /**
+     * 
+     * @param cont
+     * @return 
+     */
     private String crearTap(int cont){
         String tap="\t";
         for(int i=0;i<cont;i++){
@@ -660,6 +672,7 @@ public class lectorComandos {
                 }
             }
             if(hijos.isEmpty()|| !bar){
+                ventana.escribirMensaje("El sistema no puede encontrar la ruta especificada.\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -682,6 +695,69 @@ public class lectorComandos {
         }
     }
     /**
+     * 
+     */
+    private void funcionWhereis(){
+        listaBusqueda.clear();
+        String nombre=cadenaEntrada().get(1).toString();
+        System.out.println("entra");
+        String path="/"+directorioActual.getNombre();
+        funcionWhereisAux(directorioActual.getListaDirectorios(), directorioActual.getListaArchivos(), path, nombre);
+        for(String encontrado : listaBusqueda){
+            ventana.escribirMensaje(encontrado+"\n");
+        }
+        ventana.escribirMensaje("\n");
+        ventana.ruta=pathSistema()+":";
+        ventana.escribirMensaje( ventana.ruta);
+    }
+    /**
+     * 
+     * @param listaDirectorios
+     * @param listaArchivos
+     * @param resultado
+     * @param buscar 
+     */
+    private void funcionWhereisAux(ArrayList<directorios> listaDirectorios,ArrayList<archivo>listaArchivos,String resultado,String buscar){
+        if(validarDirectorio(buscar)!=null){
+            System.out.println("if 1");
+            for(directorios directorio: listaDirectorios){
+                System.out.println("if 2");
+                if(directorio.getNombre().trim().equals(buscar)){
+                    System.out.println("if 3");
+                    if(directorio.getDirectorioPadre()!=null){
+                        System.out.println("if 4");
+                        resultado+="/"+directorio.getNombre().trim();
+                        listaBusqueda.add(resultado);
+                        funcionWhereisAux(directorio.getListaDirectorios(),directorio.getListaArchivos(),resultado,buscar);
+                     }
+                }
+                else{
+                    resultado+="/"+directorio.getNombre().trim();
+                    funcionWhereisAux(directorio.getListaDirectorios(),directorio.getListaArchivos(),resultado,buscar);
+                }
+            }
+        }
+        else if(validarArchivo(buscar)!=null){
+            for(archivo archivo: listaArchivos){
+                if(archivo.getNombre().trim().equals(buscar)){
+                    System.out.println("if 5");
+                    if(archivo.getCreador()!=null){
+                        System.out.println("if 6");
+                        resultado+="/"+archivo.getNombre().trim();
+                        listaBusqueda.add(resultado);
+                   }
+                }
+            }
+            for(directorios directorio : listaDirectorios){
+                resultado+="/"+directorio.getNombre().trim();
+                funcionWhereisAux(directorio.getListaDirectorios(),directorio.getListaArchivos(),resultado,buscar);
+            }
+        }
+        else{
+            
+        }
+    }
+    /**
      * funcion principal de touch
      */
     private void funcionTouch(){
@@ -699,7 +775,7 @@ public class lectorComandos {
                 directorioActual.getGrupo().setArchivoGrup(nuevo);
                 listaArchivos.add(nuevo);
                 directorioActual.setArchivo(nuevo);
-                ventana.escribirMensaje("Archivo creado\n");
+                ventana.escribirMensaje("Archivo creado\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -709,19 +785,19 @@ public class lectorComandos {
                 directorioActual.getGrupo().setArchivoGrup(nuevo);
                 listaArchivos.add(nuevo);
                 directorioActual.setArchivo(nuevo);
-                ventana.escribirMensaje("Archivo creado\n");
+                ventana.escribirMensaje("Archivo creado\n\n");
                 ventana.ruta=pathSistema()+":";
                 bander=true;
                 ventana.escribirMensaje( ventana.ruta);
             }
             else{
-                ventana.escribirMensaje("Archivo existente\n");
+                ventana.escribirMensaje("Archivo existente\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n");
+            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -730,7 +806,7 @@ public class lectorComandos {
      * funcion principal del comando cat
      */
     private void funcionCat(){
-        ventana.escribirMensaje(validarArchivo(cadenaEntrada().get(1).toString().trim()).getContenido()+"\n");
+        ventana.escribirMensaje(validarArchivo(cadenaEntrada().get(1).toString().trim()).getContenido()+"\n\n");
         ventana.ruta=pathSistema()+":";
         ventana.escribirMensaje( ventana.ruta);
     }
@@ -741,24 +817,24 @@ public class lectorComandos {
         if(validarUsuario(cadenaEntrada().get(1).toString())!=null){
             if(validarDirectorio(cadenaEntrada().get(2).toString())!=null){
                 validarDirectorio(cadenaEntrada().get(2).toString()).setUsurioPadre(validarUsuario(cadenaEntrada().get(1).toString()));
-                ventana.escribirMensaje(" Cambio con exito\n");
+                ventana.escribirMensaje(" Cambio con exito\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
             else if(validarArchivo(cadenaEntrada().get(2).toString())!=null){
                 validarArchivo(cadenaEntrada().get(2).toString()).setCreador(validarUsuario(cadenaEntrada().get(1).toString()));
-                ventana.escribirMensaje(" Cambio con exito\n");
+                ventana.escribirMensaje(" Cambio con exito\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
             else{
-                ventana.escribirMensaje(" Error, no se encontro el elemento a cambiar el propietario\n");
+                ventana.escribirMensaje(" Error, no se encontro el elemento a cambiar el propietario\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro el usuario\n");
+            ventana.escribirMensaje(" Error, no se encontro el usuario\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -811,12 +887,12 @@ public class lectorComandos {
                 }
             }
             if(!bander){
-                ventana.escribirMensaje(" El archivo no pertenece al directorio actual\n");
+                ventana.escribirMensaje(" El archivo no pertenece al directorio actual\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         } catch (Exception e) {
-            ventana.escribirMensaje(" Verifique los permisos ingresados\n");
+            ventana.escribirMensaje(" Verifique los permisos ingresados\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -909,7 +985,7 @@ public class lectorComandos {
             if(archivo.getNombre().trim().equals(cadenaEntrada().get(1).toString().trim())){
                 archivo.setEstado(1);
                 listaArchivosOpen.add(archivo);
-                ventana.escribirMensaje(" Archivo abierto\n");
+                ventana.escribirMensaje(" Archivo abierto\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -930,7 +1006,7 @@ public class lectorComandos {
                 for(int i=0;i<listaArchivosOpen.size();i++){
                     if(listaArchivosOpen.get(i).getNombre().trim().equals(archivo.getNombre().trim())){
                         archivo.setEstado(0);
-                        ventana.escribirMensaje(" Archivo cerrado\n");
+                        ventana.escribirMensaje(" Archivo cerrado\n\n");
                         ventana.ruta=pathSistema()+":";
                         ventana.escribirMensaje( ventana.ruta);
                         listaArchivosOpen.remove(i);
@@ -953,7 +1029,7 @@ public class lectorComandos {
      * 
      */
     private void funcionViewFilesOpen(){
-        ventana.escribirMensaje(" Cantidad archivos abiertos "+listaArchivosOpen.size()+"\n");
+        ventana.escribirMensaje(" Cantidad archivos abiertos "+listaArchivosOpen.size()+"\n\n");
         ventana.ruta=pathSistema()+":";
         ventana.escribirMensaje( ventana.ruta);
     }
@@ -1229,6 +1305,11 @@ public class lectorComandos {
         }
         return false;
     }
+    /**
+     * 
+     * @param directorio
+     * @return 
+     */
     private boolean validarPermisosMoverArchivo(directorios directorio){
         int perimiso=directorio.getGrupo().getPermiso();
         if(estaUsuarioGrupo(directorio)){

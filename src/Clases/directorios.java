@@ -93,7 +93,6 @@ public class directorios {
                 System.out.println(listaArchivos.get(i).getNombre());
                 listaArchivos.remove(i);
             }
-        }
-        System.out.println("Tamaño lista hijos: "+listaArchivos.size());
+        }       
     }
 }
