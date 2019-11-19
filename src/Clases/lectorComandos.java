@@ -5,6 +5,7 @@
  */
 package Clases;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import static sistemaarchivo.myFileSystem.ventana;
@@ -62,40 +63,40 @@ public class lectorComandos {
             funcionPwd();
         }
         else if("mkdir".equals(textoParseado.trim())&& cadenaEntrada().size()==2){
-            funcionMkdir();
+            funcionMkdir();//falta terminar cuando son iguales no funciona
         }
         else if("rm".equals(textoParseado.trim()) && cadenaEntrada().size()<=3){
             funcionRm();
         }
         else if("mv".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
-            funcionMv();
+            funcionMv();//falta terminar
         }
         else if("ls".equals(textoParseado.trim())&& cadenaEntrada().size()<=2){
-            funcionLs();
+            funcionLs();//falta terminar -r
         }
         else if("cd".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
             funcionCd();
         }
         else if("whereis".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
-            pathBusqueda(cadenaEntrada().get(1).toString());
+            //pathBusqueda(cadenaEntrada().get(1).toString());//falta terminar
         }
         else if("ln".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
-        
+            //falta terminar
         }
         else if("touch".equals(textoParseado.trim())&& cadenaEntrada().size()==2){
             funcionTouch();
         }
         else if("cat".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
-            funcionCat();
+            funcionCat();//falta terminar los privilegios
         }
         else if("chown".equals(textoParseado.trim()) && cadenaEntrada().size()<=4){
             funcionChown();
         }
         else if("chgrp".equals(textoParseado.trim()) && cadenaEntrada().size()<=4){
-            funcionChgrp();
+            funcionChgrp();//falta terminar -r
         }
         else if("chmod".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
-        
+            //falta terminar
         }
         else if("openFile".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
             funcionOpenFile();
@@ -116,7 +117,7 @@ public class lectorComandos {
             funcionUsermod();
         }
         else if("poweroff".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
-        
+            funcionPoweroff();
         }
         else{
             ventana.escribirMensaje("Comando no existente\n");
@@ -187,6 +188,8 @@ public class lectorComandos {
                 }
             }
             else{
+                ventana.banderaSU=false;
+                ventana.banderaPassword=false;
                 ventana.escribirMensaje(" Error, Usuario no existente\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
@@ -200,24 +203,30 @@ public class lectorComandos {
         /*
         valida format
         */
-        ventana.escribirMensaje("Creadon Disco....\n");
-        nombreDisco="miDiscoDuro";
-        grupo nuevoGrupo = new grupo(nombreDisco+"Grup");
-        directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null,null);
-        nuevoDirectorio.setGrupo(nuevoGrupo);
-        listaGrupos.add(nuevoGrupo);
-        listaDirectorios.add(nuevoDirectorio);
-        directorioActual=nuevoDirectorio;
-        String tamaño = cadenaEntrada().get(1).toString();
-        disco=new discoDuro((1024*1000)*Integer.parseInt(tamaño));
-        disco.CreacionDisco();
-        disco.EscribirInicioBloque();
-        ventana.escribirMensaje("Disco creado con exito\n");
-        ClaveRootDefault=cadenaEntrada().get(2).toString();
-        usuarios root=new usuarios("Root","root",ClaveRootDefault);
-        listaUsuarios.add(root);
-        ventana.ruta=pathSistema()+":";
-        ventana.escribirMensaje( ventana.ruta);
+        try {
+            nombreDisco="miDiscoDuro";
+            grupo nuevoGrupo = new grupo(nombreDisco+"Grup");
+            directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null,null);
+            nuevoDirectorio.setGrupo(nuevoGrupo);
+            listaGrupos.add(nuevoGrupo);
+            listaDirectorios.add(nuevoDirectorio);
+            directorioActual=nuevoDirectorio;
+            String tamaño = cadenaEntrada().get(1).toString();
+            disco=new discoDuro(1024*Integer.parseInt(tamaño));
+            ventana.escribirMensaje("Creadon Disco....\n");
+            disco.CreacionDisco();
+            disco.EscribirInicioBloque();
+            ventana.escribirMensaje("Disco creado con exito\n");
+            ClaveRootDefault=cadenaEntrada().get(2).toString();
+            usuarios root=new usuarios("Root","root",ClaveRootDefault);
+            listaUsuarios.add(root);
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
+        } catch (Exception e) {
+            ventana.escribirMensaje("Error, verificar el dato del tamaño del disco\n");
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
+        }
     }
     /**
      * funcion principal de User
@@ -545,11 +554,13 @@ public class lectorComandos {
     private void funcionMv(){
         String nuevoNombre=cadenaEntrada().get(1).toString();
         String nombreMover=cadenaEntrada().get(2).toString();
-        ArrayList<String> directorioMover=parseoPathMov(nombreMover);
+        System.out.println(validarPath(nombreMover).getDirectorioPadre().getNombre());
+        System.out.println(validarPath(nombreMover).getNombre());
         if(validarArchivo(nuevoNombre)!=null && validarPath(nombreMover)!=null){
             if(validarArchivo(nuevoNombre).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
                 validarArchivo(nuevoNombre).getDirectorioPadre().removeArchivo(validarArchivo(nuevoNombre).getNombre());
                 validarArchivo(nuevoNombre).setDirectorioPadre(validarPath(nombreMover));
+                validarPath(nombreMover).setArchivo( validarArchivo(nuevoNombre));
                 ventana.escribirMensaje(" Archivo movido con exito\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
@@ -574,7 +585,26 @@ public class lectorComandos {
      */
     private void funcionLs(){
         if(cadenaEntrada().size()==1){
-            for(directorios directorio: listaDirectorios){
+            for(directorios directorio: directorioActual.getListaDirectorios()){
+                if(directorio.getDirectorioPadre()!=null){
+                    if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                        ventana.escribirMensaje("\t|___"+directorio.getNombre()+"\n");
+                    }
+                }
+            }
+            for(archivo archivo: directorioActual.getListaArchivos()){
+                if(archivo.getCreador()!=null){
+                    if(archivo.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
+                        ventana.escribirMensaje("\t|___-"+archivo.getNombre()+"\n");
+                    }
+                }
+            }
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
+        }
+    }
+    private void funcionLsAux(ArrayList<directorios> listaDirectorios,ArrayList<archivo>listaArchivos){
+        for(directorios directorio: listaDirectorios){
                 if(directorio.getDirectorioPadre()!=null){
                     if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
                         ventana.escribirMensaje("\t|___"+directorio.getNombre()+"\n");
@@ -588,15 +618,12 @@ public class lectorComandos {
                     }
                 }
             }
-            ventana.ruta=pathSistema()+":";
-            ventana.escribirMensaje( ventana.ruta);
-        }
     }
     /**
      * funcion principal para el comando cd
      */
     private void funcionCd(){
-        ArrayList<directorios> hijos = directoriosHijos();
+        ArrayList<directorios> hijos = directorioActual.getListaDirectorios();
         String nombreDirectorio=cadenaEntrada().get(1).toString();
         if(!nombreDirectorio.trim().equals("..")){
             boolean bar=false;
@@ -648,6 +675,7 @@ public class lectorComandos {
                 nuevo.setGrupo(directorioActual.getGrupo());
                 directorioActual.getGrupo().setArchivoGrup(nuevo);
                 listaArchivos.add(nuevo);
+                directorioActual.setArchivo(nuevo);
                 ventana.escribirMensaje("Archivo creado\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
@@ -657,6 +685,7 @@ public class lectorComandos {
                 nuevo.setGrupo(directorioActual.getGrupo());
                 directorioActual.getGrupo().setArchivoGrup(nuevo);
                 listaArchivos.add(nuevo);
+                directorioActual.setArchivo(nuevo);
                 ventana.escribirMensaje("Archivo creado\n");
                 ventana.ruta=pathSistema()+":";
                 bander=true;
@@ -761,16 +790,45 @@ public class lectorComandos {
     /**
      * 
      */
-    private void funcionInfoFS(){
+    private void funcionInfoFS() throws UnsupportedEncodingException{
         DecimalFormat df = new DecimalFormat("#.00");
         ventana.escribirMensaje(" Nombre del FileSystem: "+nombreDisco+"\n");
-        ventana.escribirMensaje(" Tamaño: "+df.format(disco.getTamañoDisco()/1024000)+"Mb\n");
-        int tamañoutilizado=0;
+        if(disco.getTamañoDisco()>1024000000){
+               ventana.escribirMensaje(" Tamaño: "+df.format(disco.getTamañoDisco()/1024000000) + " Gb\n");
+        }else if(disco.getTamañoDisco()>1024000){
+                ventana.escribirMensaje(" Tamaño: "+df.format(disco.getTamañoDisco()/1024000) + " Mb\n");
+        }else if(disco.getTamañoDisco()>1024){
+                ventana.escribirMensaje(" Tamaño: "+df.format(disco.getTamañoDisco()/1024) + " Kb\n");
+        }else{
+                ventana.escribirMensaje(" Tamaño: "+df.format(disco.getTamañoDisco()) + " bytes\n");
+        }
+        double tamañoutilizado=0;
+        double disponible=0;
         for(archivo archi : listaArchivos){
             tamañoutilizado+=archi.getTamaño();
         }
-        ventana.escribirMensaje(" Espacio utilizado: "+nombreDisco+"\n");
-        ventana.escribirMensaje(" Disponible: "+df.format((disco.getTamañoDisco()/1024000)-(tamañoutilizado/1024000))+"\n");
+        if(tamañoutilizado>1024000000){
+               ventana.escribirMensaje(" Espacio utilizado: "+df.format(tamañoutilizado/1024000000) + " Gb\n");
+               disponible=(disco.getTamañoDisco())-(tamañoutilizado);
+        }else if(tamañoutilizado>1024000){
+                ventana.escribirMensaje(" Espacio utilizado: "+df.format(tamañoutilizado/1024000) + " Mb\n");
+                disponible=(disco.getTamañoDisco())-(tamañoutilizado);
+        }else if(tamañoutilizado>1024){
+                ventana.escribirMensaje(" Espacio utilizado: "+df.format(tamañoutilizado/1024) + " Kb\n");
+                disponible=(disco.getTamañoDisco())-(tamañoutilizado);
+        }else{
+                ventana.escribirMensaje(" Espacio utilizado: "+df.format(tamañoutilizado) + " bytes\n");
+                disponible=(disco.getTamañoDisco())-(tamañoutilizado);
+        }
+        if(disponible>1024000000){
+               ventana.escribirMensaje(" Disponible: "+df.format((disco.getTamañoDisco()/1024000)-(tamañoutilizado/1024000))+"Gb\n");
+        }else if(disponible>1024000){
+                ventana.escribirMensaje(" Disponible: "+df.format((disco.getTamañoDisco()/1024000)-(tamañoutilizado/1024000))+"Mb\n");
+        }else if(disponible>1024){
+                ventana.escribirMensaje(" Disponible: "+df.format((disco.getTamañoDisco()/1024)-(tamañoutilizado/1024))+"Kb\n");
+        }else{
+                ventana.escribirMensaje(" Disponible: "+df.format((disco.getTamañoDisco())-(tamañoutilizado))+"bytes\n");
+        }
         ventana.ruta=pathSistema()+":";
         ventana.escribirMensaje( ventana.ruta);
     }
@@ -830,6 +888,26 @@ public class lectorComandos {
         ventana.escribirMensaje(" Cantidad archivos abiertos "+listaArchivosOpen.size()+"\n");
         ventana.ruta=pathSistema()+":";
         ventana.escribirMensaje( ventana.ruta);
+    }
+    /**
+     * 
+     */
+    private void funcionPoweroff(){
+        ventana.escribirMensaje("Desea apagar el sistema(y/n): ");
+        ventana.banderaPoweroff=true;
+    }
+    /**
+     * 
+     * @param comando 
+     */
+    public void funcionPoweroffAux(String comando){
+        if(comando.trim().equals("y")){
+            ventana.dispose();
+        }else{
+            ventana.banderaPoweroff=false;
+            ventana.ruta=pathSistema()+">";
+            ventana.escribirMensaje( ventana.ruta);
+        }
     }
     /**
      * arma la cadena de entrada sin espacios y la devuelebe en una lista
@@ -1059,32 +1137,5 @@ public class lectorComandos {
         }
         return textoCOmpletoP;
     }
-    private ArrayList<String> pathBusqueda(String nombre){
-        ArrayList<String> paths =new ArrayList<>();
-        for(directorios directorio : listaDirectorios){
-            System.out.println("Principal: "+directorio.getNombre());
-            System.out.println(pathss(directorio.getListaDirectorios(), nombre, "", ""));
-            paths.add(pathss(directorio.getListaDirectorios(), nombre, "", ""));
-        }
-        return paths;
-    }
-    private String pathss(ArrayList<directorios> listaDirectorio,String nombre,String path,String ultimo){
-        if(ultimo.equals(nombre)){
-            System.out.println("path: "+path);
-            return path;
-        }
-        else if(listaDirectorio.isEmpty()){
-            return path;
-        }
-        else{
-            for(directorios directorio : listaDirectorio){
-                System.out.println(directorio.getNombre().trim());
-                System.out.println(nombre.trim());
-                if(directorio.getNombre().trim().equals(nombre.trim())){
-                    path+=pathss(listaDirectorio, nombre, directorio.getNombre().trim()+"/"+path, directorio.getNombre().trim());
-                }
-            }
-        }
-        return "-1";
-    }
+   
 }

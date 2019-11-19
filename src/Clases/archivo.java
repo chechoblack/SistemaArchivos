@@ -1,10 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this template contenido, choose Tools | Templates
  * and open the template in the editor.
  */
 package Clases;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -13,9 +14,10 @@ import java.util.GregorianCalendar;
  * @author ser
  */
 public class archivo {
+     private final static double fB = 1024.0;
     private String contenido="Hola mundo";
     private String nombre;
-    private int Tamaño=0;
+    private int Tamaño=1024000;
     private usuarios creador;
     private directorios directorioPadre;
     private String fechaAr;
@@ -49,7 +51,9 @@ public class archivo {
         this.nombre = nombre;
     }
 
-    public int getTamaño() {
+    public int getTamaño() throws UnsupportedEncodingException {
+        final byte[] utf16Bytes= contenido.getBytes("UTF-16");
+        Tamaño+=utf16Bytes.length;
         return Tamaño;
     }
 
@@ -105,5 +109,4 @@ public class archivo {
     public String toString() {
         return "File{\n" + " Nombre= " + nombre +"\n Grupo= "+grupo.getNombre().trim()+ "\n Tama\u00f1o= " + Tamaño + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + '}'+"\n";
     }
-    
 }

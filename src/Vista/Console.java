@@ -24,6 +24,7 @@ public class Console extends javax.swing.JFrame {
     public boolean banderaSU= false;
     public boolean banderaUser= false;
     public boolean banderaPassword= false;
+    public boolean banderaPoweroff= false;
     public int contUser=0,contPas=0;
     private lectorComandos lectura=new lectorComandos();
     public String usuario="";
@@ -81,7 +82,7 @@ public class Console extends javax.swing.JFrame {
     private void txtAConsoleKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyReleased
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
-            if(!banderaSU && !banderaUser && !banderaPassword){
+            if(!banderaSU && !banderaUser && !banderaPassword && !banderaPoweroff){
                 if(!getComando().trim().equals("")){
                     lectura.setTextConsola(getComando());
                     try {
@@ -102,6 +103,9 @@ public class Console extends javax.swing.JFrame {
             }
             else if(banderaPassword){
                 lectura.funcionPasswordAux(contPas,getComando());
+            }
+            else if(banderaPoweroff){
+                lectura.funcionPoweroffAux(getComando());
             }
         }
         else if(evt.getKeyCode()==8){
