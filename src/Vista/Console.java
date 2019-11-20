@@ -129,7 +129,11 @@ public class Console extends javax.swing.JFrame {
                 lectura.funcionPasswordAux(contPas,getComando());
             }
             else if(banderaPoweroff){
-                lectura.funcionPoweroffAux(getComando());
+                try {
+                    lectura.funcionPoweroffAux(getComando());
+                } catch (IOException ex) {
+                    Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         else if(evt.getKeyChar() == KeyEvent.VK_UP){

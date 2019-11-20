@@ -128,6 +128,8 @@ public class lectorComandos {
             disco.CargarDatosPrimerBloque();
             listaGrupos=disco.getListaGrupos();
             listaUsuarios=disco.getListaUsuarios();
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
         }
         else{
             ventana.escribirMensaje("Comando no existente\n\n");
@@ -1171,8 +1173,12 @@ public class lectorComandos {
      */
     public void funcionPoweroffAux(String comando) throws IOException{
         if(comando.trim().equals("y")){
-            disco.setListaGrupos(listaGrupos);
-            disco.setListaUsuarios(listaUsuarios);
+            for(grupo grupo : listaGrupos){
+                disco.AgregarGrupo(grupo);
+            }
+            for(usuarios usuario : listaUsuarios){
+                disco.AgregarUsuario(usuario);
+            }
             disco.AgregarDatosEnMemoriaADisco();
             ventana.dispose();
         }else{
