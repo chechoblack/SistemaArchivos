@@ -18,6 +18,7 @@ public class lectorComandos {
     private String textConsola="",nombreDisco="";
     private String ClaveRootDefault="";
     private boolean banderaPassword=false;
+    public boolean banderaFormat=false;
     private boolean banderaIngresoPassword=false;
     private ArrayList usuarioTemp = new ArrayList();
     private ArrayList ContraTemp=new ArrayList();
@@ -42,7 +43,7 @@ public class lectorComandos {
     }
     public void parseoTexto() throws IOException{
         String textoParseado=(String) cadenaEntrada().get(0);
-        if("format".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
+        if("format".equals(textoParseado.trim()) && cadenaEntrada().size()==3 && !banderaFormat){
             funcionFormat();
         }
         else if("useradd".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
@@ -122,6 +123,11 @@ public class lectorComandos {
         }
         else if("note".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
             funcionNote();
+        }
+        else if(banderaFormat){
+            disco.CargarDatosPrimerBloque();
+            listaGrupos=disco.getListaGrupos();
+            listaUsuarios=disco.getListaUsuarios();
         }
         else{
             ventana.escribirMensaje("Comando no existente\n\n");
@@ -218,7 +224,7 @@ public class lectorComandos {
             directorioActual=nuevoDirectorio;
             String tamaño = cadenaEntrada().get(1).toString();
             disco=new discoDuro(1024*Integer.parseInt(tamaño));
-            ventana.escribirMensaje("Creadon Disco....\n");
+            ventana.escribirMensaje("Creado Disco....\n");
             disco.CreacionDisco();
             disco.EscribirInicioBloque();
             ventana.escribirMensaje("Disco creado con exito\n\n");
@@ -881,27 +887,34 @@ public class lectorComandos {
      * funcion principal del comando chown
      */
     private void funcionChown(){
-        if(validarUsuario(cadenaEntrada().get(1).toString())!=null){
-            if(validarDirectorio(cadenaEntrada().get(2).toString())!=null){
-                validarDirectorio(cadenaEntrada().get(2).toString()).setUsurioPadre(validarUsuario(cadenaEntrada().get(1).toString()));
-                ventana.escribirMensaje(" Cambio con exito\n\n");
-                ventana.ruta=pathSistema()+":";
-                ventana.escribirMensaje( ventana.ruta);
-            }
-            else if(validarArchivo(cadenaEntrada().get(2).toString())!=null){
-                validarArchivo(cadenaEntrada().get(2).toString()).setCreador(validarUsuario(cadenaEntrada().get(1).toString()));
-                ventana.escribirMensaje(" Cambio con exito\n\n");
-                ventana.ruta=pathSistema()+":";
-                ventana.escribirMensaje( ventana.ruta);
+        if(ventana.usuario.equals("root")){
+            if(validarUsuario(cadenaEntrada().get(1).toString())!=null){
+                if(validarDirectorio(cadenaEntrada().get(2).toString())!=null){
+                    validarDirectorio(cadenaEntrada().get(2).toString()).setUsurioPadre(validarUsuario(cadenaEntrada().get(1).toString()));
+                    ventana.escribirMensaje(" Cambio con exito\n\n");
+                    ventana.ruta=pathSistema()+":";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+                else if(validarArchivo(cadenaEntrada().get(2).toString())!=null){
+                    validarArchivo(cadenaEntrada().get(2).toString()).setCreador(validarUsuario(cadenaEntrada().get(1).toString()));
+                    ventana.escribirMensaje(" Cambio con exito\n\n");
+                    ventana.ruta=pathSistema()+":";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+                else{
+                    ventana.escribirMensaje(" Error, no se encontro el elemento a cambiar el propietario\n\n");
+                    ventana.ruta=pathSistema()+":";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
             }
             else{
-                ventana.escribirMensaje(" Error, no se encontro el elemento a cambiar el propietario\n\n");
+                ventana.escribirMensaje(" Error, no se encontro el usuario\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro el usuario\n\n");
+            ventana.escribirMensaje(" El usuario no tiene los permisos necesarios\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -914,9 +927,16 @@ public class lectorComandos {
             for(directorios directorio : directoriosHijos()){
                 if(directorio.getDirectorioPadre()!=null){
                     if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
-                        directorio.setGrupo(validarGrupo(cadenaEntrada().get(1).toString()));
-                        ventana.ruta=pathSistema()+":";
-                        ventana.escribirMensaje( ventana.ruta);
+                        if(directorio.getUsurioPadre().getNombreUsuario().trim().equals(ventana.usuario) || ventana.usuario.equals("root")){
+                            directorio.setGrupo(validarGrupo(cadenaEntrada().get(1).toString()));
+                            ventana.ruta=pathSistema()+":";
+                            ventana.escribirMensaje( ventana.ruta);
+                        }
+                        else{
+                            ventana.escribirMensaje(" El usuario no tiene los permiso necesarios\n\n");
+                            ventana.ruta=pathSistema()+":";
+                            ventana.escribirMensaje( ventana.ruta);
+                        }
                     }
                 }
             }
@@ -925,9 +945,16 @@ public class lectorComandos {
             for(archivo directorio : archivosHijos()){
                 if(directorio.getDirectorioPadre()!=null){
                     if(directorio.getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
-                        directorio.setGrupo(validarGrupo(cadenaEntrada().get(1).toString()));
-                        ventana.ruta=pathSistema()+":";
-                        ventana.escribirMensaje( ventana.ruta);
+                        if(directorio.getCreador().getNombreUsuario().trim().equals(ventana.usuario) || ventana.usuario.equals("root")){
+                            directorio.setGrupo(validarGrupo(cadenaEntrada().get(1).toString()));
+                            ventana.ruta=pathSistema()+":";
+                            ventana.escribirMensaje( ventana.ruta);
+                        }
+                        else{
+                            ventana.escribirMensaje(" El usuario no tiene los permiso necesarios\n\n");
+                            ventana.ruta=pathSistema()+":";
+                            ventana.escribirMensaje( ventana.ruta);
+                        }
                     }
                 }
             }
@@ -1040,7 +1067,7 @@ public class lectorComandos {
         }else{
                 ventana.escribirMensaje(" Disponible: "+df.format((disco.getTamañoDisco())-(tamañoutilizado))+"bytes\n");
         }
-        ventana.escribirMensaje("Estado del disco: \n");
+        ventana.escribirMensaje(" Estado del disco: \n");
         String repreDisco="\n[ ";
         for(int i=0;i<listaArchivos.size();i++){
             if(listaArchivos.get(i)!=null){

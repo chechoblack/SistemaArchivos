@@ -7,6 +7,7 @@ package Vista;
 
 import Clases.lectorComandos;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class Console extends javax.swing.JFrame {
     private lectorComandos lectura=new lectorComandos();
     private ArrayList<String> historial = new ArrayList<>();
     public String usuario="";
-    public String nombreUsuario="";
+    public String nombreUsuario="",nombreDisco="miDiscoDuro.fs";
     public String ruta="Comando>";
     public String respaldo="";
     public Console() {
@@ -91,16 +92,31 @@ public class Console extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
             if(!banderaSU && !banderaUser && !banderaPassword && !banderaPoweroff && !banderaNote){
-                if(!getComando().trim().equals("")){
-                    lectura.setTextConsola(getComando());
-                    try {
-                        lectura.parseoTexto();
-                    } catch (IOException ex) {
-                        Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+                if(new File(nombreDisco).exists()){
+                    if(!getComando().trim().equals("")){
+                        lectura.banderaFormat=true;
+                        lectura.setTextConsola(getComando());
+                        try {
+                            lectura.parseoTexto();
+                        } catch (IOException ex) {
+                            Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                }
-                else{
-                    escribirMensaje(ruta);
+                    else{
+                        escribirMensaje(ruta);
+                    }
+                }else{
+                    if(!getComando().trim().equals("")){
+                        lectura.setTextConsola(getComando());
+                        try {
+                            lectura.parseoTexto();
+                        } catch (IOException ex) {
+                            Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    else{
+                        escribirMensaje(ruta);
+                    }
                 }
             }
             else if(banderaSU){
@@ -114,6 +130,15 @@ public class Console extends javax.swing.JFrame {
             }
             else if(banderaPoweroff){
                 lectura.funcionPoweroffAux(getComando());
+            }
+        }
+        else if(evt.getKeyChar() == KeyEvent.VK_UP){
+            System.out.println("entra");
+            for(int i=0;i<historial.size();i++){
+                if(this.posicionCursor<txtAConsole.getText().length()){
+                    txtAConsole.setText(" ");
+                    escribirMensaje(historial.get(i));
+                }
             }
         }
         else if(evt.getKeyCode()==8 && !banderaNote){

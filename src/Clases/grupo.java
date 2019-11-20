@@ -17,6 +17,7 @@ public class grupo {
     private ArrayList<directorios> listaDirectorios = new ArrayList<>();
     private String nombre;
     private int permiso=7;
+    private int id;
     public grupo(String nombre) {
         this.nombre=nombre;
     }
@@ -59,6 +60,14 @@ public class grupo {
 
     public void setPermiso(int permiso) {
         this.permiso = permiso;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
     
 }
