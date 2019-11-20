@@ -19,6 +19,7 @@ public class directorios {
     private directorios directorioPadre;
     private usuarios usurioPadre;
     private grupo grupo;
+    private int tamaño=1024;
     public directorios(String nombre, int id, directorios directorioPadre,usuarios usurio) {
         this.nombre = nombre;
         this.id = id;
@@ -64,6 +65,14 @@ public class directorios {
 
     public void setGrupo(grupo grupo) {
         this.grupo = grupo;
+    }
+
+    public int getTamaño() {
+        return tamaño;
+    }
+
+    public void setTamaño(int tamaño) {
+        this.tamaño = tamaño;
     }
     
     public ArrayList<directorios> getListaDirectorios() {

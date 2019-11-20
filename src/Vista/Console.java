@@ -8,6 +8,7 @@ package Vista;
 import Clases.lectorComandos;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,8 +26,10 @@ public class Console extends javax.swing.JFrame {
     public boolean banderaUser= false;
     public boolean banderaPassword= false;
     public boolean banderaPoweroff= false;
+    public boolean banderaNote= false;
     public int contUser=0,contPas=0;
     private lectorComandos lectura=new lectorComandos();
+    private ArrayList<String> historial = new ArrayList<>();
     public String usuario="";
     public String nombreUsuario="";
     public String ruta="Comando>";
@@ -35,6 +38,7 @@ public class Console extends javax.swing.JFrame {
         initComponents();
         escribirMensaje("AA [Versión 0.1](c) 2019 AA Corporation. Todos los derechos reservados.\n");
         escribirMensaje(ruta);
+         setLocationRelativeTo(null);
     }
 
     /**
@@ -59,6 +63,9 @@ public class Console extends javax.swing.JFrame {
         txtAConsole.setCaretColor(new java.awt.Color(255, 255, 255));
         txtAConsole.setDisabledTextColor(new java.awt.Color(255, 255, 255));
         txtAConsole.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtAConsoleKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtAConsoleKeyReleased(evt);
             }
@@ -82,7 +89,7 @@ public class Console extends javax.swing.JFrame {
     private void txtAConsoleKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyReleased
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
-            if(!banderaSU && !banderaUser && !banderaPassword && !banderaPoweroff){
+            if(!banderaSU && !banderaUser && !banderaPassword && !banderaPoweroff && !banderaNote){
                 if(!getComando().trim().equals("")){
                     lectura.setTextConsola(getComando());
                     try {
@@ -108,21 +115,47 @@ public class Console extends javax.swing.JFrame {
                 lectura.funcionPoweroffAux(getComando());
             }
         }
-        else if(evt.getKeyCode()==8){
+        else if(evt.getKeyCode()==8 && !banderaNote){
             if(this.posicionCursor>txtAConsole.getText().length()){
                 txtAConsole.setText(" ");
                 txtAConsole.setText(respaldo);
             }
         }
+        else if(banderaNote){
+             this.posicionCursor=0;
+        }
     }//GEN-LAST:event_txtAConsoleKeyReleased
+
+    private void txtAConsoleKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyPressed
+        // TODO add your handling code here:
+        if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_G && banderaNote) {
+            lectura.funcionNoteAux(getComando());
+            cleanConsola();
+            String respaldo2=respaldo;
+            escribirMensaje(respaldo2+historial.get(historial.size()-2));
+            escribirMensaje(ruta);
+        }
+    }//GEN-LAST:event_txtAConsoleKeyPressed
+    public void cleanConsola(){
+         txtAConsole.setText("");
+         this.posicionCursor=0;
+    }
     public void escribirMensaje(String mensaje){
-        txtAConsole.setText(txtAConsole.getText()+mensaje);
-        respaldo=txtAConsole.getText();
-        this.posicionCursor=txtAConsole.getText().length();
-        txtAConsole.setCaretPosition(posicionCursor);
+        if(!banderaNote){
+            txtAConsole.setText(txtAConsole.getText()+mensaje);
+            respaldo=txtAConsole.getText();
+            this.posicionCursor=txtAConsole.getText().length();
+            txtAConsole.setCaretPosition(posicionCursor);
+        }
+        else{
+            txtAConsole.setText(txtAConsole.getText()+mensaje);
+            this.posicionCursor=txtAConsole.getText().length();
+            txtAConsole.setCaretPosition(posicionCursor);
+        }
     }
     public String getComando(){
         String comando=txtAConsole.getText().substring(posicionCursor, txtAConsole.getText().length());
+        historial.add(comando);
         return comando;
     }
     /**

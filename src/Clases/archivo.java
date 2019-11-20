@@ -8,6 +8,8 @@ package Clases;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,13 +19,14 @@ public class archivo {
      private final static double fB = 1024.0;
     private String contenido="Hola mundo";
     private String nombre;
-    private int Tamaño=1024000;
+    private float Tamaño=1024;
     private usuarios creador;
     private directorios directorioPadre;
     private String fechaAr;
     private int estado=0;
     private Calendar fecha = new GregorianCalendar();
-    private int permiso=7; 
+    private int permiso=7;
+    private int permisoGrupo=7; 
     private grupo grupo;
     public archivo(String nombre, usuarios creador,directorios directorio) {
         this.nombre = nombre;
@@ -36,10 +39,12 @@ public class archivo {
     }
 
     public String getContenido() {
+        System.out.println(contenido);
         return contenido;
     }
 
     public void setContenido(String contenido) {
+        System.out.println(contenido);
         this.contenido = contenido;
     }
 
@@ -51,9 +56,9 @@ public class archivo {
         this.nombre = nombre;
     }
 
-    public int getTamaño() throws UnsupportedEncodingException {
+    public float getTamaño() throws UnsupportedEncodingException {
         final byte[] utf16Bytes= contenido.getBytes("UTF-16");
-        Tamaño+=utf16Bytes.length;
+        Tamaño=1024+(float)utf16Bytes.length/1000;
         return Tamaño;
     }
 
@@ -104,9 +109,22 @@ public class archivo {
     public void setPermiso(int permiso) {
         this.permiso = permiso;
     }
+
+    public int getPermisoGrupo() {
+        return permisoGrupo;
+    }
+
+    public void setPermisoGrupo(int permisoGrupo) {
+        this.permisoGrupo = permisoGrupo;
+    }
     
     @Override
     public String toString() {
-        return "File{\n" + " Nombre= " + nombre +"\n Grupo= "+grupo.getNombre().trim()+ "\n Tama\u00f1o= " + Tamaño + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + " \n Permiso: "+permiso+ '}'+"\n";
+         try {
+             return "File{\n" + " Nombre= " + nombre +"\n Grupo= "+grupo.getNombre().trim()+ "\n Tama\u00f1o= " + getTamaño() + "\n Dueño= " + creador.getNombreCompleto().trim() + "\n Ubicacion= " + directorioPadre.getNombre() + "\n Fecha= " + fechaAr + "\n Estado 1 abierto/ 0 cerrado= " + estado+"\n" + " \n Permiso: "+permiso+ '}'+"\n";
+         } catch (UnsupportedEncodingException ex) {
+             Logger.getLogger(archivo.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         return null;
     }
 }
