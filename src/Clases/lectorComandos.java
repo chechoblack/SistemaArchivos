@@ -115,7 +115,7 @@ public class lectorComandos {
         else if("infoFS".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
             funcionInfoFS();
         }
-        else if("usermod".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
+        else if("usermod".equals(textoParseado.trim()) && cadenaEntrada().size()==3){
             funcionUsermod();
         }
         else if("poweroff".equals(textoParseado.trim()) && cadenaEntrada().size()==1){
@@ -124,18 +124,32 @@ public class lectorComandos {
         else if("note".equals(textoParseado.trim()) && cadenaEntrada().size()==2){
             funcionNote();
         }
-        else if(banderaFormat){
-            disco.CargarDatosPrimerBloque();
-            listaGrupos=disco.getListaGrupos();
-            listaUsuarios=disco.getListaUsuarios();
-            ventana.ruta=pathSistema()+":";
-            ventana.escribirMensaje( ventana.ruta);
-        }
         else{
-            ventana.escribirMensaje("Comando no existente\n\n");
-            ventana.ruta=pathSistema()+":";
-            ventana.escribirMensaje( ventana.ruta);
+            if(banderaFormat && "format".equals(textoParseado.trim())){
+                ventana.escribirMensaje("se ha cargado un disco\n\n");
+                ventana.ruta=pathSistema()+":";
+                ventana.escribirMensaje( ventana.ruta);   
+            }
+            else{
+                ventana.escribirMensaje("Comando no existente\n\n");
+                ventana.ruta=pathSistema()+":";
+                ventana.escribirMensaje( ventana.ruta);   
+            }
         }
+    }
+    
+    public void cargarDicoExistente() throws IOException{
+        System.out.println("entra");
+        banderaFormat=true;
+        disco.CargarDatosPrimerBloque();
+        System.out.println(disco.getListaGrupos().size());
+        listaGrupos=disco.getListaGrupos();
+        listaUsuarios=disco.getListaUsuarios();
+        System.out.println(listaUsuarios.get(0).getNombreUsuario());
+        ventana.usuario=listaUsuarios.get(0).getNombreUsuario();
+        ClaveRootDefault=listaUsuarios.get(0).getPassword();
+        ventana.ruta=pathSistema()+">";
+        ventana.escribirMensaje( ventana.ruta);
     }
     /**
      * funcion principal de su
@@ -442,6 +456,7 @@ public class lectorComandos {
                     usuarios usuario=verificarUsuarioPassword(cadenaEntrada().get(1).toString());
                     grupo grup=verificarGrupo(cadenaEntrada().get(2).toString());
                     grup.setUsuarioGrup(usuario);
+                    ventana.escribirMensaje(" Cambio exitoso\n\n");
                     ventana.ruta=pathSistema()+":";
                     ventana.escribirMensaje( ventana.ruta);
                 }

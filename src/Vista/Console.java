@@ -40,7 +40,14 @@ public class Console extends javax.swing.JFrame {
         initComponents();
         escribirMensaje("AA [Versión 0.1](c) 2019 AA Corporation. Todos los derechos reservados.\n");
         escribirMensaje(ruta);
-         setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
+         if(new File(nombreDisco).exists()&& !lectura.banderaFormat){
+             try {
+                 System.out.println("carga");
+                 lectura.cargarDicoExistente();
+             } catch (Exception e) {
+             }
+        }
     }
 
     /**
@@ -92,31 +99,16 @@ public class Console extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
             if(!banderaSU && !banderaUser && !banderaPassword && !banderaPoweroff && !banderaNote){
-                if(new File(nombreDisco).exists()){
-                    if(!getComando().trim().equals("")){
-                        lectura.banderaFormat=true;
-                        lectura.setTextConsola(getComando());
-                        try {
-                            lectura.parseoTexto();
-                        } catch (IOException ex) {
-                            Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                if(!getComando().trim().equals("")){
+                    lectura.setTextConsola(getComando());
+                    try {
+                        lectura.parseoTexto();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    else{
-                        escribirMensaje(ruta);
-                    }
-                }else{
-                    if(!getComando().trim().equals("")){
-                        lectura.setTextConsola(getComando());
-                        try {
-                            lectura.parseoTexto();
-                        } catch (IOException ex) {
-                            Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    else{
-                        escribirMensaje(ruta);
-                    }
+                }
+                else{
+                    escribirMensaje(ruta);
                 }
             }
             else if(banderaSU){
