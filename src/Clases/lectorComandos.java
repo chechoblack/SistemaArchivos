@@ -470,11 +470,10 @@ public class lectorComandos {
     /**
      * funcion principal para el comando mkdir
      */
-    private void funcionMkdir(){
+    private void funcionMkdir() throws UnsupportedEncodingException{
         String lista=cadenaEntrada().get(1).toString();
         //
         if(!ventana.usuario.equals("")){
-            System.out.println(validarPermisosEscribirGrupo(directorioActual));
             if(validarPermisosEscribirGrupo(directorioActual) ||ventana.usuario.equals("root")|| directorioActual.getUsurioPadre().getNombreUsuario().trim().equals(ventana.usuario)){
                 for(String nuevoDirectorio : listaDirectoriosNew(lista)){
                     boolean bander=false;
@@ -485,20 +484,36 @@ public class lectorComandos {
                     }
                     if(directoriosHijos().isEmpty()){
                         directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
-                        nuevo.setGrupo(directorioActual.getGrupo());
-                        directorioActual.getGrupo().setDirectorioGrup(nuevo);
-                        directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
-                        listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
-                        ventana.escribirMensaje("Directorio Creado\n\n");
+                        double tamaño=tamañoUtilizado()+nuevo.getTamaño();
+                        if(disco.getTamañoDisco()>tamaño){
+                            nuevo.setGrupo(directorioActual.getGrupo());
+                            directorioActual.getGrupo().setDirectorioGrup(nuevo);
+                            directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
+                            listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
+                            ventana.escribirMensaje("Directorio Creado\n\n");
+                        }
+                        else{
+                            ventana.escribirMensaje(" El disco no tiene suficiente espacio\n\n");
+                            ventana.ruta=pathSistema()+":";
+                            ventana.escribirMensaje( ventana.ruta);
+                        }
 
                     }
                     else if(!bander){
                         directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
-                        nuevo.setGrupo(directorioActual.getGrupo());
-                        directorioActual.getGrupo().setDirectorioGrup(nuevo);
-                        directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
-                        listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
-                        ventana.escribirMensaje("Directorio Creado\n\n");
+                        double tamaño=tamañoUtilizado()+nuevo.getTamaño();
+                        if(disco.getTamañoDisco()>tamaño){
+                            nuevo.setGrupo(directorioActual.getGrupo());
+                            directorioActual.getGrupo().setDirectorioGrup(nuevo);
+                            directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
+                            listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
+                            ventana.escribirMensaje("Directorio Creado\n\n");
+                        }
+                        else{
+                            ventana.escribirMensaje(" El disco no tiene suficiente espacio\n\n");
+                            ventana.ruta=pathSistema()+":";
+                            ventana.escribirMensaje( ventana.ruta);
+                        }
                     }
                     else{
                         ventana.escribirMensaje("Directorio existente\n\n");
@@ -571,13 +586,14 @@ public class lectorComandos {
         if(validarArchivo(nuevoNombre)!=null && validarPath(nombreMover)!=null){
             if(validarArchivo(nuevoNombre).getDirectorioPadre().getNombre().trim().equals(directorioActual.getNombre().trim())){
                 if(validarPermisosEscribirGrupo(validarPath(nombreMover)) || ventana.usuario.equals("root")){
-                    validarArchivo(nuevoNombre).getDirectorioPadre().removeArchivo(validarArchivo(nuevoNombre).getNombre());
-                    validarArchivo(nuevoNombre).setDirectorioPadre(validarPath(nombreMover));
-                    validarPath(nombreMover).setArchivo( validarArchivo(nuevoNombre));
-                    ventana.escribirMensaje(" Archivo movido con exito\n\n");
-                    ventana.ruta=pathSistema()+":";
-                    ventana.escribirMensaje( ventana.ruta);
-                    
+                    if(validarPermisosMoverArchivo(validarPath(nombreMover), validarArchivo(nuevoNombre))){
+                        validarArchivo(nuevoNombre).getDirectorioPadre().removeArchivo(validarArchivo(nuevoNombre).getNombre());
+                        validarArchivo(nuevoNombre).setDirectorioPadre(validarPath(nombreMover));
+                        validarPath(nombreMover).setArchivo( validarArchivo(nuevoNombre));
+                        ventana.escribirMensaje(" Archivo movido con exito\n\n");
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
                 }
                 else{
                     ventana.escribirMensaje(" El usuario no cuenta con los permisos\n\n");
@@ -781,7 +797,7 @@ public class lectorComandos {
     /**
      * funcion principal de touch
      */
-    private void funcionTouch(){
+    private void funcionTouch() throws UnsupportedEncodingException{
         if(!ventana.usuario.equals("")){
             if(validarPermisosLeerArchivo(directorioActual) || ventana.usuario.equals("root")){
                 String nuevoArchivo=cadenaEntrada().get(1).toString();
@@ -793,24 +809,40 @@ public class lectorComandos {
                 }
                 if(archivosHijos().isEmpty()){
                     archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
-                    nuevo.setGrupo(directorioActual.getGrupo());
-                    directorioActual.getGrupo().setArchivoGrup(nuevo);
-                    listaArchivos.add(nuevo);
-                    directorioActual.setArchivo(nuevo);
-                    ventana.escribirMensaje("Archivo creado\n\n");
-                    ventana.ruta=pathSistema()+":";
-                    ventana.escribirMensaje( ventana.ruta);
+                    double tamaño=tamañoUtilizado()+nuevo.getTamaño();
+                    if(disco.getTamañoDisco()>tamaño){
+                        nuevo.setGrupo(directorioActual.getGrupo());
+                        directorioActual.getGrupo().setArchivoGrup(nuevo);
+                        listaArchivos.add(nuevo);
+                        directorioActual.setArchivo(nuevo);
+                        ventana.escribirMensaje("Archivo creado\n\n");
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
+                    else{
+                        ventana.escribirMensaje(" El disco no tiene suficiente espacio\n\n");
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
                 }
                 else if(!bander){
                     archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
-                    nuevo.setGrupo(directorioActual.getGrupo());
-                    directorioActual.getGrupo().setArchivoGrup(nuevo);
-                    listaArchivos.add(nuevo);
-                    directorioActual.setArchivo(nuevo);
-                    ventana.escribirMensaje("Archivo creado\n\n");
-                    ventana.ruta=pathSistema()+":";
-                    bander=true;
-                    ventana.escribirMensaje( ventana.ruta);
+                    double tamaño=tamañoUtilizado()+nuevo.getTamaño();
+                    if(disco.getTamañoDisco()>tamaño){
+                        nuevo.setGrupo(directorioActual.getGrupo());
+                        directorioActual.getGrupo().setArchivoGrup(nuevo);
+                        listaArchivos.add(nuevo);
+                        directorioActual.setArchivo(nuevo);
+                        ventana.escribirMensaje("Archivo creado\n\n");
+                        ventana.ruta=pathSistema()+":";
+                        bander=true;
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
+                    else{
+                        ventana.escribirMensaje(" El disco no tiene suficiente espacio\n\n");
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                    }
                 }
                 else{
                     ventana.escribirMensaje("Archivo existente\n\n");
@@ -1127,10 +1159,18 @@ public class lectorComandos {
         if(validarArchivo(cadenaEntrada().get(1).toString().trim())!=null){
             for(archivo archivo : directorioActual.getListaArchivos()){
                 if(archivo.getNombre().trim().equals(cadenaEntrada().get(1).toString().trim())){
-                    bander=true;
-                    ventana.banderaNote=true;
-                    ventana.cleanConsola();
-                    ventana.escribirMensaje(archivo.getContenido());
+                    if(validarPermisosEscribirGrupo(directorioActual)){
+                        bander=true;
+                        ventana.banderaNote=true;
+                        ventana.cleanConsola();
+                        ventana.escribirMensaje(archivo.getContenido());
+                    }
+                    else{
+                        ventana.escribirMensaje(" El usuario no tiene los permisos necesarios\n\n");
+                        ventana.ruta=pathSistema()+":";
+                        ventana.escribirMensaje( ventana.ruta);
+                        ventana.banderaNote=false;
+                    }
                 }
             }
             if(!bander){
@@ -1148,20 +1188,48 @@ public class lectorComandos {
     /**
      * 
      * @param comando 
+     * @return  
+     * @throws java.io.UnsupportedEncodingException 
      */
-    public void funcionNoteAux(String comando){
-        //System.out.println(comando);
-        
+    public boolean funcionNoteAux(String comando) throws UnsupportedEncodingException{
+        double tamañoutilizado=tamañoUtilizado();
         if(validarArchivo(cadenaEntrada().get(1).toString().trim())!=null){
             for(archivo archivo : directorioActual.getListaArchivos()){
                 if(archivo.getNombre().trim().equals(cadenaEntrada().get(1).toString().trim())){
-                    if(validarPermisosEscribirGrupo(directorioActual)){
+                    final byte[] utf16Bytes= comando.getBytes("UTF-16");
+                    float Tamaño=1024+(float)utf16Bytes.length/1000;                        
+                    if(disco.getTamañoDisco()>((float)tamañoutilizado+Tamaño)){
                         archivo.setContenido(comando);
                         ventana.banderaNote=false;
+                        return true;
+                    }
+                    else{
+                        ventana.banderaNote=false;
+                        return false;
                     }
                 }
             }
         }
+        return false;
+    }
+    /**
+     * 
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
+    private double tamañoUtilizado() throws UnsupportedEncodingException{
+        double tamañoutilizado=0;
+        for(int i=0;i<listaArchivos.size();i++){
+            if(listaArchivos.get(i)!=null){
+                tamañoutilizado+=listaArchivos.get(i).getTamaño();
+            }
+        }
+        for(int i=0;i<listaDirectorios.size();i++){
+            if(listaDirectorios.get(i)!=null){
+                tamañoutilizado+=listaDirectorios.get(i).getTamaño();
+            }
+        }
+        return tamañoutilizado;
     }
     /**
      * arma la cadena de entrada sin espacios y la devuelebe en una lista
@@ -1422,10 +1490,13 @@ public class lectorComandos {
      * @param directorio
      * @return 
      */
-    private boolean validarPermisosMoverArchivo(directorios directorio){
+    private boolean validarPermisosMoverArchivo(directorios directorio,archivo archivo){
         int perimiso=directorio.getGrupo().getPermiso();
+        int permisoA=archivo.getPermiso();
+        int permisoG=archivo.getPermisoGrupo();
         if(estaUsuarioGrupo(directorio)){
-            if(perimiso==2 || perimiso==3 || perimiso==6 || perimiso==7){
+            if((permisoA==2 || permisoA==3 || permisoA==6 || permisoA==7)
+                    || (permisoG==2 || permisoG==3 || permisoG==6 || permisoG==7)){
                 return true;
             }
         }

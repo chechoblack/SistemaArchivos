@@ -8,6 +8,7 @@ package Vista;
 import Clases.lectorComandos;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,11 +130,21 @@ public class Console extends javax.swing.JFrame {
     private void txtAConsoleKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAConsoleKeyPressed
         // TODO add your handling code here:
         if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_G && banderaNote) {
-            lectura.funcionNoteAux(getComando());
-            cleanConsola();
-            String respaldo2=respaldo;
-            escribirMensaje(respaldo2+historial.get(historial.size()-2));
-            escribirMensaje(ruta);
+            try {
+                boolean a = lectura.funcionNoteAux(getComando());
+                cleanConsola();
+                String respaldo2=respaldo;
+                escribirMensaje(respaldo2+historial.get(historial.size()-2));
+                if(!a){
+                    escribirMensaje(" El disco no tiene suficiente espacio\n\n");
+                }
+                else{
+                    escribirMensaje(" Guardado con exito\n\n");
+                }
+                escribirMensaje(ruta);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(Console.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_txtAConsoleKeyPressed
     public void cleanConsola(){
@@ -149,7 +160,7 @@ public class Console extends javax.swing.JFrame {
         }
         else{
             txtAConsole.setText(txtAConsole.getText()+mensaje);
-            this.posicionCursor=txtAConsole.getText().length();
+            this.posicionCursor=0;
             txtAConsole.setCaretPosition(posicionCursor);
         }
     }
