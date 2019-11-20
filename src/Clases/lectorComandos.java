@@ -505,7 +505,7 @@ public class lectorComandos {
                 ventana.escribirMensaje( ventana.ruta);
             }
             else{
-                ventana.escribirMensaje(" El uuario actual no posee los permisos necesarios\n\n");
+                ventana.escribirMensaje(" El usuario actual no posee los permisos necesarios\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
@@ -771,43 +771,50 @@ public class lectorComandos {
      * funcion principal de touch
      */
     private void funcionTouch(){
-        String nuevoArchivo=cadenaEntrada().get(1).toString();
-        if(!ventana.usuario.equals("")){
-            boolean bander=false;
-            for(archivo archi: archivosHijos()){
-                if(archi.getNombre().trim().equals(nuevoArchivo.trim())){
+        if(validarPermisosLeerArchivo(directorioActual) || ventana.usuario.equals("root")){
+            String nuevoArchivo=cadenaEntrada().get(1).toString();
+            if(!ventana.usuario.equals("")){
+                boolean bander=false;
+                for(archivo archi: archivosHijos()){
+                    if(archi.getNombre().trim().equals(nuevoArchivo.trim())){
+                        bander=true;
+                    }
+                }
+                if(archivosHijos().isEmpty()){
+                    archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
+                    nuevo.setGrupo(directorioActual.getGrupo());
+                    directorioActual.getGrupo().setArchivoGrup(nuevo);
+                    listaArchivos.add(nuevo);
+                    directorioActual.setArchivo(nuevo);
+                    ventana.escribirMensaje("Archivo creado\n\n");
+                    ventana.ruta=pathSistema()+":";
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+                else if(!bander){
+                    archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
+                    nuevo.setGrupo(directorioActual.getGrupo());
+                    directorioActual.getGrupo().setArchivoGrup(nuevo);
+                    listaArchivos.add(nuevo);
+                    directorioActual.setArchivo(nuevo);
+                    ventana.escribirMensaje("Archivo creado\n\n");
+                    ventana.ruta=pathSistema()+":";
                     bander=true;
+                    ventana.escribirMensaje( ventana.ruta);
+                }
+                else{
+                    ventana.escribirMensaje("Archivo existente\n\n");
+                    ventana.ruta=pathSistema()+":";
+                    ventana.escribirMensaje( ventana.ruta);
                 }
             }
-            if(archivosHijos().isEmpty()){
-                archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
-                nuevo.setGrupo(directorioActual.getGrupo());
-                directorioActual.getGrupo().setArchivoGrup(nuevo);
-                listaArchivos.add(nuevo);
-                directorioActual.setArchivo(nuevo);
-                ventana.escribirMensaje("Archivo creado\n\n");
-                ventana.ruta=pathSistema()+":";
-                ventana.escribirMensaje( ventana.ruta);
-            }
-            else if(!bander){
-                archivo nuevo=new archivo(nuevoArchivo, verificarUsuarioPassword(ventana.usuario),directorioActual);
-                nuevo.setGrupo(directorioActual.getGrupo());
-                directorioActual.getGrupo().setArchivoGrup(nuevo);
-                listaArchivos.add(nuevo);
-                directorioActual.setArchivo(nuevo);
-                ventana.escribirMensaje("Archivo creado\n\n");
-                ventana.ruta=pathSistema()+":";
-                bander=true;
-                ventana.escribirMensaje( ventana.ruta);
-            }
             else{
-                ventana.escribirMensaje("Archivo existente\n\n");
+                ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
                 ventana.ruta=pathSistema()+":";
                 ventana.escribirMensaje( ventana.ruta);
             }
         }
         else{
-            ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
+            ventana.escribirMensaje(" El usuario actual no posee los permisos necesarios\n\n");
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         }
@@ -816,9 +823,16 @@ public class lectorComandos {
      * funcion principal del comando cat
      */
     private void funcionCat(){
-        ventana.escribirMensaje(validarArchivo(cadenaEntrada().get(1).toString().trim()).getContenido()+"\n\n");
-        ventana.ruta=pathSistema()+":";
-        ventana.escribirMensaje( ventana.ruta);
+        if(validarPermisosLeerArchivo(directorioActual)){
+            ventana.escribirMensaje(validarArchivo(cadenaEntrada().get(1).toString().trim()).getContenido()+"\n\n");
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
+        }
+        else{
+            ventana.escribirMensaje(" El usuario actual no posee los permisos necesarios\n\n");
+            ventana.ruta=pathSistema()+":";
+            ventana.escribirMensaje( ventana.ruta);
+        }
     }
     /**
      * funcion principal del comando chown
@@ -1039,7 +1053,13 @@ public class lectorComandos {
      * 
      */
     private void funcionViewFilesOpen(){
-        ventana.escribirMensaje(" Cantidad archivos abiertos "+listaArchivosOpen.size()+"\n\n");
+        ArrayList<archivo> archivosOpen = new ArrayList<>();
+        for(archivo archivo : listaArchivosOpen){
+            if(archivo.getCreador().getNombreUsuario().trim().equals(ventana.usuario.trim())){
+                archivosOpen.add(archivo);
+            }
+        }
+        ventana.escribirMensaje(" Cantidad archivos abiertos "+archivosOpen.size()+"\n\n");
         ventana.ruta=pathSistema()+":";
         ventana.escribirMensaje( ventana.ruta);
     }
@@ -1325,6 +1345,19 @@ public class lectorComandos {
         int perimiso=directorio.getGrupo().getPermiso();
         if(estaUsuarioGrupo(directorio)){
             if(perimiso==2 || perimiso==3 || perimiso==6 || perimiso==7){
+                return true;
+            }
+        }
+        return false;
+    }/**
+     * 
+     * @param directorio
+     * @return 
+     */
+    private boolean validarPermisosLeerArchivo(directorios directorio){
+        int perimiso=directorio.getGrupo().getPermiso();
+        if(estaUsuarioGrupo(directorio)){
+            if(perimiso==4 || perimiso==5 || perimiso==6 || perimiso==7){
                 return true;
             }
         }
