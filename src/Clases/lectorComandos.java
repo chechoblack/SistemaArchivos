@@ -207,7 +207,7 @@ public class lectorComandos {
         */
         try {
             nombreDisco="miDiscoDuro";
-            grupo nuevoGrupo = new grupo(nombreDisco+"Grup");
+            grupo nuevoGrupo = new grupo("root"+"Grup");
             directorios nuevoDirectorio = new directorios("Home", listaDirectorios.size(),null,null);
             nuevoDirectorio.setGrupo(nuevoGrupo);
             listaGrupos.add(nuevoGrupo);
@@ -222,6 +222,7 @@ public class lectorComandos {
             ClaveRootDefault=cadenaEntrada().get(2).toString();
             usuarios root=new usuarios("Root","root",ClaveRootDefault);
             listaUsuarios.add(root);
+            nuevoGrupo.setUsuarioGrup(root);
             ventana.ruta=pathSistema()+":";
             ventana.escribirMensaje( ventana.ruta);
         } catch (Exception e) {
@@ -297,6 +298,7 @@ public class lectorComandos {
                         listaDirectorios.add(nuevo);
                         listaGrupos.add(nuevoGrupo);
                         listaUsuarios.add(nuevoUsuario);
+                        directorioActual.setDirectorioHijo(nuevo);
                         ventana.ruta=pathSistema()+":";
                         ventana.escribirMensaje( ventana.ruta);
                     }else{
@@ -469,36 +471,44 @@ public class lectorComandos {
         String lista=cadenaEntrada().get(1).toString();
         //
         if(!ventana.usuario.equals("")){
-            for(String nuevoDirectorio : listaDirectoriosNew(lista)){
-                boolean bander=false;
-                for(directorios directorio: directoriosHijos()){
-                    if(directorio.getNombre().trim().equals(nuevoDirectorio.trim())){
-                        bander=true;
+            System.out.println(validarPermisosEscribirGrupo(directorioActual));
+            if(validarPermisosEscribirGrupo(directorioActual) ||ventana.usuario.equals("root")|| directorioActual.getUsurioPadre().getNombreUsuario().trim().equals(ventana.usuario)){
+                for(String nuevoDirectorio : listaDirectoriosNew(lista)){
+                    boolean bander=false;
+                    for(directorios directorio: directoriosHijos()){
+                        if(directorio.getNombre().trim().equals(nuevoDirectorio.trim())){
+                            bander=true;
+                        }
+                    }
+                    if(directoriosHijos().isEmpty()){
+                        directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
+                        nuevo.setGrupo(directorioActual.getGrupo());
+                        directorioActual.getGrupo().setDirectorioGrup(nuevo);
+                        directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
+                        listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
+                        ventana.escribirMensaje("Directorio Creado\n\n");
+
+                    }
+                    else if(!bander){
+                        directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
+                        nuevo.setGrupo(directorioActual.getGrupo());
+                        directorioActual.getGrupo().setDirectorioGrup(nuevo);
+                        directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
+                        listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
+                        ventana.escribirMensaje("Directorio Creado\n\n");
+                    }
+                    else{
+                        ventana.escribirMensaje("Directorio existente\n\n");
                     }
                 }
-                if(directoriosHijos().isEmpty()){
-                    directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
-                    nuevo.setGrupo(directorioActual.getGrupo());
-                    directorioActual.getGrupo().setDirectorioGrup(nuevo);
-                    directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
-                    listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
-                    ventana.escribirMensaje("Directorio Creado\n\n");
-                    
-                }
-                else if(!bander){
-                    directorios nuevo = new directorios(nuevoDirectorio, listaDirectorios.size(),directorioActual,verificarUsuarioPassword(ventana.usuario));//crea el directorio
-                    nuevo.setGrupo(directorioActual.getGrupo());
-                    directorioActual.getGrupo().setDirectorioGrup(nuevo);
-                    directorioActual.setDirectorioHijo(nuevo);//lo agrega al directorio actual
-                    listaDirectorios.add(nuevo);//lo agrega al repositorio de directorios
-                    ventana.escribirMensaje("Directorio Creado\n\n");
-                }
-                else{
-                    ventana.escribirMensaje("Directorio existente\n\n");
-                }
+                ventana.ruta=pathSistema()+":";
+                ventana.escribirMensaje( ventana.ruta);
             }
-            ventana.ruta=pathSistema()+":";
-            ventana.escribirMensaje( ventana.ruta);
+            else{
+                ventana.escribirMensaje(" El uuario actual no posee los permisos necesarios\n\n");
+                ventana.ruta=pathSistema()+":";
+                ventana.escribirMensaje( ventana.ruta);
+            }
         }
         else{
             ventana.escribirMensaje(" Error, no se encontro un usuario logeado\n\n");
@@ -1298,6 +1308,7 @@ public class lectorComandos {
      */
     private boolean validarPermisosEscribirGrupo(directorios directorio){
         int perimiso=directorio.getGrupo().getPermiso();
+        System.out.println("in grup: "+estaUsuarioGrupo(directorio));
         if(estaUsuarioGrupo(directorio)){
             if(perimiso==2 || perimiso==3 || perimiso==6 || perimiso==7){
                 return true;
