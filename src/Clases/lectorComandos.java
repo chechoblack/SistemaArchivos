@@ -1169,8 +1169,11 @@ public class lectorComandos {
      * 
      * @param comando 
      */
-    public void funcionPoweroffAux(String comando){
+    public void funcionPoweroffAux(String comando) throws IOException{
         if(comando.trim().equals("y")){
+            disco.setListaGrupos(listaGrupos);
+            disco.setListaUsuarios(listaUsuarios);
+            disco.AgregarDatosEnMemoriaADisco();
             ventana.dispose();
         }else{
             ventana.banderaPoweroff=false;
